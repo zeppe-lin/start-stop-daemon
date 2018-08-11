@@ -1,20 +1,20 @@
-diff --git a/start-stop-daemon/start-stop-daemon.8 b/start-stop-daemon/start-stop-daemon.8
-index de2d35c3..de666e65 100644
---- a/start-stop-daemon/start-stop-daemon.8
-+++ b/start-stop-daemon/start-stop-daemon.8
+diff --git a/start-stop-daemon.8 b/start-stop-daemon.8
+index de2d35c..c370bbe 100644
+--- a/start-stop-daemon.8
++++ b/start-stop-daemon.8
 @@ -20,7 +20,7 @@
  .\" You should have received a copy of the GNU General Public License
  .\" along with this program.  If not, see <https://www.gnu.org/licenses/>.
  .
 -.TH start\-stop\-daemon 8 "2017-07-04" "Debian Project" "dpkg suite"
-+.TH start\-stop\-daemon 8 "2017-08-12" "CRUX 3.3" "core services"
++.TH start\-stop\-daemon 8 "2018-08-11" "CRUX 3.4" "core services"
  .nh
  .SH NAME
  start\-stop\-daemon \- start and stop system daemon programs
-diff --git a/start-stop-daemon/start-stop-daemon.c b/start-stop-daemon/start-stop-daemon.c
-index 81357504..f586fd91 100644
---- a/start-stop-daemon/start-stop-daemon.c
-+++ b/start-stop-daemon/start-stop-daemon.c
+diff --git a/start-stop-daemon.c b/start-stop-daemon.c
+index e972042..35b79ee 100644
+--- a/start-stop-daemon.c
++++ b/start-stop-daemon.c
 @@ -20,10 +20,34 @@
   * Changes by Ian Jackson: added --retry (and associated rearrangements).
   */
@@ -25,8 +25,8 @@ index 81357504..f586fd91 100644
  
  #include <dpkg/macros.h>
 +#else
-+# define VERSION 		"20170812"
-+# define CRUX 			"CRUX 3.3"
++# define VERSION 		"20180811"
++# define CRUX 			"CRUX 3.4"
 +
 +# define HAVE_SYS_PARAM_H
 +# define HAVE_SYS_SYSCALL_H
@@ -50,7 +50,7 @@ index 81357504..f586fd91 100644
  
  #if defined(__linux__)
  #  define OS_Linux
-@@ -159,6 +183,10 @@
+@@ -158,6 +182,10 @@
  #define HAVE_IOPRIO_SET
  #endif
  
@@ -61,7 +61,7 @@ index 81357504..f586fd91 100644
  #define IOPRIO_CLASS_SHIFT 13
  #define IOPRIO_PRIO_VALUE(class, prio) (((class) << IOPRIO_CLASS_SHIFT) | (prio))
  #define IO_SCHED_PRIO_MIN 0
-@@ -327,8 +355,7 @@ xstrndup(const char *str, size_t n)
+@@ -345,8 +373,7 @@ xstrndup(const char *str, size_t n)
  static void
  timespec_gettime(struct timespec *ts)
  {
@@ -71,7 +71,7 @@ index 81357504..f586fd91 100644
  	if (clock_gettime(CLOCK_MONOTONIC, ts) < 0)
  		fatal("clock_gettime failed");
  #else
-@@ -646,9 +673,9 @@ usage(void)
+@@ -664,9 +691,9 @@ usage(void)
  static void
  do_version(void)
  {
