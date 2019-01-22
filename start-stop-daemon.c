@@ -570,13 +570,22 @@ setup_socket_name(const char *suffix)
 	return notify_socket;
 }
 
+static void
+set_socket_passcred(int fd)
+{
+#ifdef SO_PASSCRED
+	static const int enable = 1;
+
+	setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &enable, sizeof(enable));
+#endif
+}
+
 static int
 create_notify_socket(void)
 {
 	const char *sockname;
 	struct sockaddr_un su;
 	int fd, rc, flags;
-	static const int enable = 1;
 
 	/* Create notification socket. */
 	fd = socket(AF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0);
@@ -614,7 +623,7 @@ create_notify_socket(void)
 
 	/* XXX: Verify we are talking to an expected child? Although it is not
 	 * clear whether this is feasible given the knowledge we have got. */
-	setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &enable, sizeof(enable));
+	set_socket_passcred(fd);
 
 	return fd;
 }
@@ -2256,8 +2265,13 @@ do_pidfile(const char *name)
 		/* If we are only matching on the pidfile, and it is owned by
 		 * a non-root user, then this is a security risk, and the
 		 * contents cannot be trusted, because the daemon might have
-		 * been compromised. */
-		if (match_mode == MATCH_PIDFILE) {
+		 * been compromised.
+		 *
+		 * If we got /dev/null specified as the pidfile, we ignore the
+		 * checks, as this is being used to run processes no matter
+		 * what. */
+		if (match_mode == MATCH_PIDFILE &&
+		    strcmp(name, "/dev/null") != 0) {
 			struct stat st;
 			int fd = fileno(f);
 
