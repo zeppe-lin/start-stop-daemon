@@ -79,6 +79,8 @@
 #include <sys/wait.h>
 #include <sys/select.h>
 #include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #include <errno.h>
 #include <limits.h>
@@ -183,6 +185,16 @@ enum action_code {
 	ACTION_STATUS,
 };
 
+enum match_code {
+	MATCH_NONE	= 0,
+	MATCH_PID	= 1 << 0,
+	MATCH_PPID	= 1 << 1,
+	MATCH_PIDFILE	= 1 << 2,
+	MATCH_EXEC	= 1 << 3,
+	MATCH_NAME	= 1 << 4,
+	MATCH_USER	= 1 << 5,
+};
+
 /* Time conversion constants. */
 enum {
 	NANOSEC_IN_SEC      = 1000000000L,
@@ -194,11 +206,16 @@ enum {
 static const long MIN_POLL_INTERVAL = 20L * NANOSEC_IN_MILLISEC;
 
 static enum action_code action;
+static enum match_code match_mode;
 static bool testmode = false;
 static int quietmode = 0;
 static int exitnodo = 1;
 static bool background = false;
 static bool close_io = true;
+static bool notify_await = false;
+static int notify_timeout = 60;
+static char *notify_sockdir;
+static char *notify_socket;
 static bool mpidfile = false;
 static bool rpidfile = false;
 static int signal_nr = SIGTERM;
@@ -268,6 +285,32 @@ static struct res_schedule *io_sched = NULL;
 static int schedule_length;
 static struct schedule_item *schedule = NULL;
 
+
+static void DPKG_ATTR_PRINTF(1)
+debug(const char *format, ...)
+{
+	va_list arglist;
+
+	if (quietmode >= 0)
+		return;
+
+	va_start(arglist, format);
+	vprintf(format, arglist);
+	va_end(arglist);
+}
+
+static void DPKG_ATTR_PRINTF(1)
+info(const char *format, ...)
+{
+	va_list arglist;
+
+	if (quietmode > 0)
+		return;
+
+	va_start(arglist, format);
+	vprintf(format, arglist);
+	va_end(arglist);
+}
 
 static void DPKG_ATTR_PRINTF(1)
 warning(const char *format, ...)
@@ -399,6 +442,26 @@ newpath(const char *dirname, const char *filename)
 	return path;
 }
 
+static int
+parse_unsigned(const char *string, int base, int *value_r)
+{
+	long value;
+	char *endptr;
+
+	if (!string[0])
+		return -1;
+
+	errno = 0;
+	value = strtol(string, &endptr, base);
+	if (string == endptr || *endptr != '\0' || errno != 0)
+		return -1;
+	if (value < 0 || value > INT_MAX)
+		return -1;
+
+	*value_r = value;
+	return 0;
+}
+
 static long
 get_open_fd_max(void)
 {
@@ -469,6 +532,187 @@ wait_for_child(pid_t pid)
 }
 
 static void
+cleanup_socket_dir(void)
+{
+	unlink(notify_socket);
+	rmdir(notify_sockdir);
+}
+
+static char *
+setup_socket_name(const char *suffix)
+{
+	const char *basedir;
+
+	if (getuid() == 0 && access("/run", F_OK) == 0) {
+		basedir = "/run";
+	} else {
+		basedir = getenv("TMPDIR");
+		if (basedir == NULL)
+			basedir = P_tmpdir;
+	}
+
+	if (asprintf(&notify_sockdir, "%s/%s.XXXXXX", basedir, suffix) < 0)
+		fatal("cannot allocate socket directory name");
+
+	if (mkdtemp(notify_sockdir) == NULL)
+		fatal("cannot create socket directory %s", notify_sockdir);
+
+	atexit(cleanup_socket_dir);
+
+	if (chown(notify_sockdir, runas_uid, runas_gid))
+		fatal("cannot change socket directory ownership");
+
+	if (asprintf(&notify_socket, "%s/notify", notify_sockdir) < 0)
+		fatal("cannot allocate socket name");
+
+	setenv("NOTIFY_SOCKET", notify_socket, 1);
+
+	return notify_socket;
+}
+
+static int
+create_notify_socket(void)
+{
+	const char *sockname;
+	struct sockaddr_un su;
+	int fd, rc, flags;
+	static const int enable = 1;
+
+	/* Create notification socket. */
+	fd = socket(AF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+	if (fd < 0)
+		fatal("cannot create notification socket");
+
+	/* We could set SOCK_CLOEXEC instead, but then we would need to
+	 * check whether the socket call failed, try and then do this anyway,
+	 * when we have no threading problems to worry about. */
+	flags = fcntl(fd, F_GETFD);
+	if (flags < 0)
+		fatal("cannot read fd flags for notification socket");
+	if (fcntl(fd, F_SETFD, flags | FD_CLOEXEC) < 0)
+		fatal("cannot set close-on-exec flag for notification socket");
+
+	sockname = setup_socket_name(".s-s-d-notify");
+
+	/* Bind to a socket in a temporary directory, selected based on
+	 * the platform. */
+	memset(&su, 0, sizeof(su));
+	su.sun_family = AF_UNIX;
+	strncpy(su.sun_path, sockname, sizeof(su.sun_path) - 1);
+
+	rc = bind(fd, &su, sizeof(su));
+	if (rc < 0)
+		fatal("cannot bind to notification socket");
+
+	rc = chmod(su.sun_path, 0660);
+	if (rc < 0)
+		fatal("cannot change notification socket permissions");
+
+	rc = chown(su.sun_path, runas_uid, runas_gid);
+	if (rc < 0)
+		fatal("cannot change notification socket ownership");
+
+	/* XXX: Verify we are talking to an expected child? Although it is not
+	 * clear whether this is feasible given the knowledge we have got. */
+	setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &enable, sizeof(enable));
+
+	return fd;
+}
+
+static void
+wait_for_notify(int fd)
+{
+	struct timespec startat, now, elapsed, timeout, timeout_orig;
+	fd_set fdrs;
+	int rc;
+
+	timeout.tv_sec = notify_timeout;
+	timeout.tv_nsec = 0;
+	timeout_orig = timeout;
+
+	timespec_gettime(&startat);
+
+	while (timeout.tv_sec >= 0 && timeout.tv_nsec >= 0) {
+		FD_ZERO(&fdrs);
+		FD_SET(fd, &fdrs);
+
+		/* Wait for input. */
+		debug("Waiting for notifications... (timeout %lusec %lunsec)\n",
+		      timeout.tv_sec, timeout.tv_nsec);
+		rc = pselect(fd + 1, &fdrs, NULL, NULL, &timeout, NULL);
+
+		/* Catch non-restartable errors, that is, not signals nor
+		 * kernel out of resources. */
+		if (rc < 0 && (errno != EINTR && errno != EAGAIN))
+			fatal("cannot monitor notification socket for activity");
+
+		/* Timed-out. */
+		if (rc == 0)
+			fatal("timed out waiting for a notification");
+
+		/* Update the timeout, as should not rely on pselect() having
+		 * done that for us, which is an unportable assumption. */
+		timespec_gettime(&now);
+		timespec_sub(&now, &startat, &elapsed);
+		timespec_sub(&timeout_orig, &elapsed, &timeout);
+
+		/* Restartable error, a signal or kernel out of resources. */
+		if (rc < 0)
+			continue;
+
+		/* Parse it and check for a supported notification message,
+		 * once we get a READY=1, we exit. */
+		for (;;) {
+			ssize_t nrecv;
+			char buf[4096];
+			char *line, *line_next;
+
+			nrecv = recv(fd, buf, sizeof(buf), 0);
+			if (nrecv < 0 && (errno != EINTR && errno != EAGAIN))
+				fatal("cannot receive notification packet");
+			if (nrecv < 0)
+				break;
+
+			buf[nrecv] = '\0';
+
+			for (line = buf; *line; line = line_next) {
+				line_next = strchrnul(line, '\n');
+				if (*line_next == '\n')
+					*line_next++ = '\0';
+
+				debug("Child sent some notification...\n");
+				if (strncmp(line, "EXTEND_TIMEOUT_USEC=", 20) == 0) {
+					int extend_usec = 0;
+
+					if (parse_unsigned(line + 20, 10, &extend_usec) != 0)
+						fatal("cannot parse extended timeout notification %s", line);
+
+					/* Reset the current timeout. */
+					timeout.tv_sec = extend_usec / 1000L;
+					timeout.tv_nsec = (extend_usec % 1000L) *
+					                  NANOSEC_IN_MILLISEC;
+					timeout_orig = timeout;
+
+					timespec_gettime(&startat);
+				} else if (strncmp(line, "ERRNO=", 6) == 0) {
+					int suberrno = 0;
+
+					if (parse_unsigned(line + 6, 10, &suberrno) != 0)
+						fatal("cannot parse errno notification %s", line);
+					errno = suberrno;
+					fatal("program failed to initialize");
+				} else if (strcmp(line, "READY=1") == 0) {
+					debug("-> Notification => ready for service.\n");
+					return;
+				} else {
+					debug("-> Notification line '%s' received\n", line);
+				}
+			}
+		}
+	}
+}
+
+static void
 write_pidfile(const char *filename, pid_t pid)
 {
 	FILE *fp;
@@ -499,12 +743,12 @@ remove_pidfile(const char *filename)
 static void
 daemonize(void)
 {
+	int notify_fd = -1;
 	pid_t pid;
 	sigset_t mask;
 	sigset_t oldmask;
 
-	if (quietmode < 0)
-		printf("Detaching to start %s...", startas);
+	debug("Detaching to start %s...\n", startas);
 
 	/* Block SIGCHLD to allow waiting for the child process while it is
 	 * performing actions, such as creating a pidfile. */
@@ -512,6 +756,9 @@ daemonize(void)
 	sigaddset(&mask, SIGCHLD);
 	if (sigprocmask(SIG_BLOCK, &mask, &oldmask) == -1)
 		fatal("cannot block SIGCHLD");
+
+	if (notify_await)
+		notify_fd = create_notify_socket();
 
 	pid = fork();
 	if (pid < 0)
@@ -521,6 +768,15 @@ daemonize(void)
 		 * perform any actions there, like creating a pidfile, we do
 		 * not suffer from race conditions on return. */
 		wait_for_child(pid);
+
+		if (notify_await) {
+			/* Wait for a readiness notification from the second
+			 * child, so that we can safely exit when the service
+			 * is up. */
+			wait_for_notify(notify_fd);
+			close(notify_fd);
+			cleanup_socket_dir();
+		}
 
 		_exit(0);
 	}
@@ -535,7 +791,7 @@ daemonize(void)
 	else if (pid) { /* Second parent. */
 		/* Set a default umask for dumb programs, which might get
 		 * overridden by the --umask option later on, so that we get
-		 * a defined umask when creating the pidfille. */
+		 * a defined umask when creating the pidfile. */
 		umask(022);
 
 		if (mpidfile && pidfile != NULL)
@@ -548,8 +804,7 @@ daemonize(void)
 	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) == -1)
 		fatal("cannot restore signal mask");
 
-	if (quietmode < 0)
-		printf("done.\n");
+	debug("Detaching complete...\n");
 }
 
 static void
@@ -620,6 +875,8 @@ usage(void)
 "                                  scheduler (default prio is 4)\n"
 "  -k, --umask <mask>            change the umask to <mask> before starting\n"
 "  -b, --background              force the process to detach\n"
+"      --notify-await            wait for a readiness notification\n"
+"      --notify-timeout <int>    timeout after <int> seconds of notify wait\n"
 "  -C, --no-close                do not close any file descriptor\n"
 "  -m, --make-pidfile            create the pidfile before starting\n"
 "      --remove-pidfile          delete the pidfile after stopping\n"
@@ -708,26 +965,6 @@ static const struct sigpair siglist[] = {
 	{ "TTIN",	SIGTTIN	},
 	{ "TTOU",	SIGTTOU	}
 };
-
-static int
-parse_unsigned(const char *string, int base, int *value_r)
-{
-	long value;
-	char *endptr;
-
-	if (!string[0])
-		return -1;
-
-	errno = 0;
-	value = strtol(string, &endptr, base);
-	if (string == endptr || *endptr != '\0' || errno != 0)
-		return -1;
-	if (value < 0 || value > INT_MAX)
-		return -1;
-
-	*value_r = value;
-	return 0;
-}
 
 static int
 parse_pid(const char *pid_str, int *pid_num)
@@ -930,15 +1167,15 @@ parse_schedule(const char *schedule_str)
 	} else {
 		count = 0;
 		repeatat = -1;
-		while (schedule_str != NULL) {
-			slash = strchr(schedule_str, '/');
-			str_len = slash ? (size_t)(slash - schedule_str) : strlen(schedule_str);
+		while (*schedule_str) {
+			slash = strchrnul(schedule_str, '/');
+			str_len = (size_t)(slash - schedule_str);
 			if (str_len >= sizeof(item_buf))
 				badusage("invalid schedule item: far too long"
 				         " (you must delimit items with slashes)");
 			memcpy(item_buf, schedule_str, str_len);
 			item_buf[str_len] = '\0';
-			schedule_str = slash ? slash + 1 : NULL;
+			schedule_str = *slash ? slash + 1 : slash;
 
 			parse_schedule_item(item_buf, &schedule[count]);
 			if (schedule[count].type == sched_forever) {
@@ -979,6 +1216,8 @@ set_action(enum action_code new_action)
 #define OPT_PID		500
 #define OPT_PPID	501
 #define OPT_RM_PIDFILE	502
+#define OPT_NOTIFY_AWAIT	503
+#define OPT_NOTIFY_TIMEOUT	504
 
 static void
 parse_options(int argc, char * const *argv)
@@ -1009,6 +1248,8 @@ parse_options(int argc, char * const *argv)
 		{ "iosched",	  1, NULL, 'I'},
 		{ "umask",	  1, NULL, 'k'},
 		{ "background",	  0, NULL, 'b'},
+		{ "notify-await", 0, NULL, OPT_NOTIFY_AWAIT},
+		{ "notify-timeout", 1, NULL, OPT_NOTIFY_TIMEOUT},
 		{ "no-close",	  0, NULL, 'C'},
 		{ "make-pidfile", 0, NULL, 'm'},
 		{ "remove-pidfile", 0, NULL, OPT_RM_PIDFILE},
@@ -1023,6 +1264,7 @@ parse_options(int argc, char * const *argv)
 	const char *schedule_str = NULL;
 	const char *proc_schedule_str = NULL;
 	const char *io_schedule_str = NULL;
+	const char *notify_timeout_str = NULL;
 	size_t changeuser_len;
 	int c;
 
@@ -1052,18 +1294,22 @@ parse_options(int argc, char * const *argv)
 			startas = optarg;
 			break;
 		case 'n':  /* --name <process-name> */
+			match_mode |= MATCH_NAME;
 			cmdname = optarg;
 			break;
 		case 'o':  /* --oknodo */
 			exitnodo = 0;
 			break;
 		case OPT_PID: /* --pid <pid> */
+			match_mode |= MATCH_PID;
 			pid_str = optarg;
 			break;
 		case OPT_PPID: /* --ppid <ppid> */
+			match_mode |= MATCH_PPID;
 			ppid_str = optarg;
 			break;
 		case 'p':  /* --pidfile <pid-file> */
+			match_mode |= MATCH_PIDFILE;
 			pidfile = optarg;
 			break;
 		case 'q':  /* --quiet */
@@ -1076,12 +1322,14 @@ parse_options(int argc, char * const *argv)
 			testmode = true;
 			break;
 		case 'u':  /* --user <username>|<uid> */
+			match_mode |= MATCH_USER;
 			userspec = optarg;
 			break;
 		case 'v':  /* --verbose */
 			quietmode = -1;
 			break;
 		case 'x':  /* --exec <executable> */
+			match_mode |= MATCH_EXEC;
 			execname = optarg;
 			break;
 		case 'c':  /* --chuid <username>|<uid> */
@@ -1115,6 +1363,12 @@ parse_options(int argc, char * const *argv)
 			break;
 		case 'b':  /* --background */
 			background = true;
+			break;
+		case OPT_NOTIFY_AWAIT:
+			notify_await = true;
+			break;
+		case OPT_NOTIFY_TIMEOUT:
+			notify_timeout_str = optarg;
 			break;
 		case 'C': /* --no-close */
 			close_io = false;
@@ -1168,11 +1422,16 @@ parse_options(int argc, char * const *argv)
 			badusage("umask value must be a positive number");
 	}
 
+	if (notify_timeout_str != NULL)
+		if (parse_unsigned(notify_timeout_str, 10, &notify_timeout) != 0)
+			badusage("invalid notify timeout value");
+
 	if (action == ACTION_NONE)
 		badusage("need one of --start or --stop or --status");
 
-	if (!execname && !pid_str && !ppid_str && !pidfile && !userspec &&
-	    !cmdname)
+	if (match_mode == MATCH_NONE ||
+	    (!execname && !cmdname && !userspec &&
+	     !pid_str && !ppid_str && !pidfile))
 		badusage("need at least one of --exec, --pid, --ppid, --pidfile, --user or --name");
 
 #ifdef PROCESS_NAME_SIZE
@@ -1194,7 +1453,7 @@ parse_options(int argc, char * const *argv)
 		badusage("--remove-pidfile requires --pidfile");
 
 	if (pid_str && pidfile)
-		badusage("need either --pid of --pidfile, not both");
+		badusage("need either --pid or --pidfile, not both");
 
 	if (background && action != ACTION_START)
 		badusage("--background is only relevant with --start");
@@ -1994,6 +2253,24 @@ do_pidfile(const char *name)
 	if (f) {
 		enum status_code pid_status;
 
+		/* If we are only matching on the pidfile, and it is owned by
+		 * a non-root user, then this is a security risk, and the
+		 * contents cannot be trusted, because the daemon might have
+		 * been compromised. */
+		if (match_mode == MATCH_PIDFILE) {
+			struct stat st;
+			int fd = fileno(f);
+
+			if (fstat(fd, &st) < 0)
+				fatal("cannot stat pidfile %s", name);
+
+			if ((st.st_uid != getuid() && st.st_uid != 0) ||
+			    (st.st_gid != getgid() && st.st_gid != 0))
+				fatal("matching only on non-root pidfile %s is insecure", name);
+			if (st.st_mode & 0002)
+				fatal("matching only on world-writable pidfile %s is insecure", name);
+		}
+
 		if (fscanf(f, "%d", &pid) == 1)
 			pid_status = pid_check(pid);
 		else
@@ -2037,7 +2314,7 @@ do_procinit(void)
 			prog_status = pid_status;
 	}
 	closedir(procdir);
-	if (!foundany)
+	if (foundany == 0)
 		fatal("nothing in /proc - not mounted?");
 
 	return prog_status;
@@ -2218,8 +2495,7 @@ do_start(int argc, char **argv)
 	do_findprocs();
 
 	if (found) {
-		if (quietmode <= 0)
-			printf("%s already running.\n", execname ? execname : "process");
+		info("%s already running.\n", execname ? execname : "process");
 		return exitnodo;
 	}
 	if (testmode && quietmode <= 0) {
@@ -2247,8 +2523,7 @@ do_start(int argc, char **argv)
 	}
 	if (testmode)
 		return 0;
-	if (quietmode < 0)
-		printf("Starting %s...\n", startas);
+	debug("Starting %s...\n", startas);
 	*--argv = startas;
 	if (background)
 		/* Ok, we need to detach this process. */
@@ -2334,9 +2609,7 @@ do_stop(int sig_num, int *n_killed, int *n_notkilled)
 
 	for (p = found; p; p = p->next) {
 		if (testmode) {
-			if (quietmode <= 0)
-				printf("Would send signal %d to %d.\n",
-				       sig_num, p->pid);
+			info("Would send signal %d to %d.\n", sig_num, p->pid);
 			(*n_killed)++;
 		} else if (kill(p->pid, sig_num) == 0) {
 			pid_list_push(&killed, p->pid);
@@ -2456,8 +2729,7 @@ finish_stop_schedule(bool anykilled)
 	if (anykilled)
 		return 0;
 
-	if (quietmode <= 0)
-		printf("No %s found running; none killed.\n", what_stop);
+	info("No %s found running; none killed.\n", what_stop);
 
 	return exitnodo;
 }
@@ -2470,8 +2742,7 @@ run_stop_schedule(void)
 
 	if (testmode) {
 		if (schedule != NULL) {
-			if (quietmode <= 0)
-				printf("Ignoring --retry in test mode\n");
+			info("Ignoring --retry in test mode\n");
 			schedule = NULL;
 		}
 	}
@@ -2497,8 +2768,8 @@ run_stop_schedule(void)
 	if (schedule == NULL) {
 		do_stop(signal_nr, &n_killed, &n_notkilled);
 		do_stop_summary(0);
-		if (n_notkilled > 0 && quietmode <= 0)
-			printf("%d pids were not killed\n", n_notkilled);
+		if (n_notkilled > 0)
+			info("%d pids were not killed\n", n_notkilled);
 		if (n_killed)
 			anykilled = true;
 		return finish_stop_schedule(anykilled);
@@ -2532,9 +2803,8 @@ run_stop_schedule(void)
 		}
 	}
 
-	if (quietmode <= 0)
-		printf("Program %s, %d process(es), refused to die.\n",
-		       what_stop, n_killed);
+	info("Program %s, %d process(es), refused to die.\n",
+	     what_stop, n_killed);
 
 	return 2;
 }
