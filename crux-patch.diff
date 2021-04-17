@@ -12,7 +12,7 @@ index d16f0ed..1c3ff78 100644
  
  #include <dpkg/macros.h>
 +#else
-+# define VERSION "20210109"
++# define VERSION "20210417"
 +# define CRUX "CRUX-Linux"
 +
 +# define WANT_SYSTEMD_NOTIFY 0 /* 1=yes */
