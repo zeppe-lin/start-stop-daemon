@@ -1,0 +1,24 @@
+ABOUT
+=====
+
+This directory contains start-stop-daemon, the tools which starts and
+stops system daemon programs.
+
+It is a fork of CRUX' start-stop-daemon, which in turn is a patched
+version of debian's start-stop-daemon (which is a part of debian's
+dpkg).  The original sources can be downloaded from:
+
+  1. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git;a=summary
+  2. git://crux.nu/tools/start-stop-daemon.git
+
+
+LICENSE
+=======
+
+Start-stop-daemon is licensed through the GNU General Public License
+v2 (for start-stop-daemon.8.pod) and Public Domain (for
+start-stop-daemon.c).
+
+See <https://gnu.org/licenses/gpl.html> and
+<https://creativecommons.org/publicdomain/> respectively for the
+complete licenses.
