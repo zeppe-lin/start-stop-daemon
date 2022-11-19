@@ -20,16 +20,8 @@
  * Changes by Ian Jackson: added --retry (and associated rearrangements).
  */
 
-#if 0
-#include <config.h>
-#include <compat.h>
-
-#include <dpkg/macros.h>
-#else
 # define VERSION "20210417"
 # define CRUX "CRUX-Linux"
-
-# define WANT_SYSTEMD_NOTIFY 0 /* 1=yes */
 
 # define HAVE_SYS_PARAM_H
 # define HAVE_SYS_SYSCALL_H
@@ -49,7 +41,6 @@
 
 # define _GNU_SOURCE
 # include <unistd.h>
-#endif
 
 #if defined(__linux__)
 #  define OS_Linux
@@ -243,12 +234,6 @@ static int exitnodo = 1;
 static bool background = false;
 static bool close_io = true;
 static const char *output_io;
-#if WANT_SYSTEMD_NOTIFY
-static bool notify_await = false;
-static int notify_timeout = 60;
-static char *notify_sockdir;
-static char *notify_socket;
-#endif
 static bool mpidfile = false;
 static bool rpidfile = false;
 static int signal_nr = SIGTERM;
@@ -580,198 +565,6 @@ wait_for_child(pid_t pid)
 	}
 }
 
-#if WANT_SYSTEMD_NOTIFY
-static void
-cleanup_socket_dir(void)
-{
-	(void)unlink(notify_socket);
-	(void)rmdir(notify_sockdir);
-}
-
-static char *
-setup_socket_name(const char *suffix)
-{
-	const char *basedir;
-
-	if (getuid() == 0 && access("/run", F_OK) == 0) {
-		basedir = "/run";
-	} else {
-		basedir = getenv("TMPDIR");
-		if (basedir == NULL)
-			basedir = P_tmpdir;
-	}
-
-	if (asprintf(&notify_sockdir, "%s/%s.XXXXXX", basedir, suffix) < 0)
-		fatale("cannot allocate socket directory name");
-
-	if (mkdtemp(notify_sockdir) == NULL)
-		fatale("cannot create socket directory %s", notify_sockdir);
-
-	atexit(cleanup_socket_dir);
-
-	if (chown(notify_sockdir, runas_uid, runas_gid))
-		fatale("cannot change socket directory ownership");
-
-	if (asprintf(&notify_socket, "%s/notify", notify_sockdir) < 0)
-		fatale("cannot allocate socket name");
-
-	setenv("NOTIFY_SOCKET", notify_socket, 1);
-
-	return notify_socket;
-}
-
-static void
-set_socket_passcred(int fd)
-{
-#ifdef SO_PASSCRED
-	static const int enable = 1;
-
-	(void)setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &enable, sizeof(enable));
-#endif
-}
-
-static int
-create_notify_socket(void)
-{
-	const char *sockname;
-	struct sockaddr_un su;
-	int fd, rc, flags;
-
-	/* Create notification socket. */
-	fd = socket(AF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0);
-	if (fd < 0)
-		fatale("cannot create notification socket");
-
-	/* We could set SOCK_CLOEXEC instead, but then we would need to
-	 * check whether the socket call failed, try and then do this anyway,
-	 * when we have no threading problems to worry about. */
-	flags = fcntl(fd, F_GETFD);
-	if (flags < 0)
-		fatale("cannot read fd flags for notification socket");
-	if (fcntl(fd, F_SETFD, flags | FD_CLOEXEC) < 0)
-		fatale("cannot set close-on-exec flag for notification socket");
-
-	sockname = setup_socket_name(".s-s-d-notify");
-
-	/* Bind to a socket in a temporary directory, selected based on
-	 * the platform. */
-	memset(&su, 0, sizeof(su));
-	su.sun_family = AF_UNIX;
-	strncpy(su.sun_path, sockname, sizeof(su.sun_path) - 1);
-
-	rc = bind(fd, &su, sizeof(su));
-	if (rc < 0)
-		fatale("cannot bind to notification socket");
-
-	rc = chmod(su.sun_path, 0660);
-	if (rc < 0)
-		fatale("cannot change notification socket permissions");
-
-	rc = chown(su.sun_path, runas_uid, runas_gid);
-	if (rc < 0)
-		fatale("cannot change notification socket ownership");
-
-	/* XXX: Verify we are talking to an expected child? Although it is not
-	 * clear whether this is feasible given the knowledge we have got. */
-	set_socket_passcred(fd);
-
-	return fd;
-}
-
-static void
-wait_for_notify(int fd)
-{
-	struct timespec startat, now, elapsed, timeout, timeout_orig;
-	fd_set fdrs;
-	int rc;
-
-	timeout.tv_sec = notify_timeout;
-	timeout.tv_nsec = 0;
-	timeout_orig = timeout;
-
-	timespec_gettime(&startat);
-
-	while (timeout.tv_sec >= 0 && timeout.tv_nsec >= 0) {
-		FD_ZERO(&fdrs);
-		FD_SET(fd, &fdrs);
-
-		/* Wait for input. */
-		debug("Waiting for notifications... (timeout %lusec %lunsec)\n",
-		      timeout.tv_sec, timeout.tv_nsec);
-		rc = pselect(fd + 1, &fdrs, NULL, NULL, &timeout, NULL);
-
-		/* Catch non-restartable errors, that is, not signals nor
-		 * kernel out of resources. */
-		if (rc < 0 && (errno != EINTR && errno != EAGAIN))
-			fatale("cannot monitor notification socket for activity");
-
-		/* Timed-out. */
-		if (rc == 0)
-			fatal("timed out waiting for a notification");
-
-		/* Update the timeout, as should not rely on pselect() having
-		 * done that for us, which is an unportable assumption. */
-		timespec_gettime(&now);
-		timespec_sub(&now, &startat, &elapsed);
-		timespec_sub(&timeout_orig, &elapsed, &timeout);
-
-		/* Restartable error, a signal or kernel out of resources. */
-		if (rc < 0)
-			continue;
-
-		/* Parse it and check for a supported notification message,
-		 * once we get a READY=1, we exit. */
-		for (;;) {
-			ssize_t nrecv;
-			char buf[4096];
-			char *line, *line_next;
-
-			nrecv = recv(fd, buf, sizeof(buf), 0);
-			if (nrecv < 0 && (errno != EINTR && errno != EAGAIN))
-				fatale("cannot receive notification packet");
-			if (nrecv < 0)
-				break;
-
-			buf[nrecv] = '\0';
-
-			for (line = buf; *line; line = line_next) {
-				line_next = strchrnul(line, '\n');
-				if (*line_next == '\n')
-					*line_next++ = '\0';
-
-				debug("Child sent some notification...\n");
-				if (strncmp(line, "EXTEND_TIMEOUT_USEC=", 20) == 0) {
-					int extend_usec = 0;
-
-					if (parse_unsigned(line + 20, 10, &extend_usec) != 0)
-						fatale("cannot parse extended timeout notification %s", line);
-
-					/* Reset the current timeout. */
-					timeout.tv_sec = extend_usec / 1000L;
-					timeout.tv_nsec = (extend_usec % 1000L) *
-					                  NANOSEC_IN_MILLISEC;
-					timeout_orig = timeout;
-
-					timespec_gettime(&startat);
-				} else if (strncmp(line, "ERRNO=", 6) == 0) {
-					int suberrno = 0;
-
-					if (parse_unsigned(line + 6, 10, &suberrno) != 0)
-						fatale("cannot parse errno notification %s", line);
-					errno = suberrno;
-					fatale("program failed to initialize");
-				} else if (strcmp(line, "READY=1") == 0) {
-					debug("-> Notification => ready for service.\n");
-					return;
-				} else {
-					debug("-> Notification line '%s' received\n", line);
-				}
-			}
-		}
-	}
-}
-#endif /* WANT_SYSTEMD_NOTIFY */
-
 static void
 write_pidfile(const char *filename, pid_t pid)
 {
@@ -803,9 +596,6 @@ remove_pidfile(const char *filename)
 static void
 daemonize(void)
 {
-#if WANT_SYSTEMD_NOTIFY
-	int notify_fd = -1;
-#endif
 	pid_t pid;
 	sigset_t mask;
 	sigset_t oldmask;
@@ -819,11 +609,6 @@ daemonize(void)
 	if (sigprocmask(SIG_BLOCK, &mask, &oldmask) == -1)
 		fatale("cannot block SIGCHLD");
 
-#if WANT_SYSTEMD_NOTIFY
-	if (notify_await)
-		notify_fd = create_notify_socket();
-#endif
-
 	pid = fork();
 	if (pid < 0)
 		fatale("unable to do first fork");
@@ -833,25 +618,8 @@ daemonize(void)
 		 * not suffer from race conditions on return. */
 		wait_for_child(pid);
 
-#if WANT_SYSTEMD_NOTIFY
-		if (notify_await) {
-			/* Wait for a readiness notification from the second
-			 * child, so that we can safely exit when the service
-			 * is up. */
-			wait_for_notify(notify_fd);
-			close(notify_fd);
-			cleanup_socket_dir();
-		}
-#endif
-
 		_exit(0);
 	}
-
-	/* Close the notification socket, even though it is close-on-exec. */
-#if WANT_SYSTEMD_NOTIFY
-	if (notify_await)
-		close(notify_fd);
-#endif
 
 	/* Create a new session. */
 	if (setsid() < 0)
@@ -947,10 +715,6 @@ usage(void)
 "                                  scheduler (default prio is 4)\n"
 "  -k, --umask <mask>            change the umask to <mask> before starting\n"
 "  -b, --background              force the process to detach\n"
-#if WANT_SYSTEMD_NOTIFY
-"      --notify-await            wait for a readiness notification\n"
-"      --notify-timeout <int>    timeout after <int> seconds of notify wait\n"
-#endif
 "  -C, --no-close                do not close any file descriptor\n"
 "  -O, --output <filename>       send stdout and stderr to <filename>\n"
 "  -m, --make-pidfile            create the pidfile before starting\n"
@@ -1323,10 +1087,6 @@ parse_options(int argc, char * const *argv)
 		{ "iosched",	  1, NULL, 'I'},
 		{ "umask",	  1, NULL, 'k'},
 		{ "background",	  0, NULL, 'b'},
-#if WANT_SYSTEMD_NOTIFY
-		{ "notify-await", 0, NULL, OPT_NOTIFY_AWAIT},
-		{ "notify-timeout", 1, NULL, OPT_NOTIFY_TIMEOUT},
-#endif
 		{ "no-close",	  0, NULL, 'C'},
 		{ "output",	  1, NULL, 'O'},
 		{ "make-pidfile", 0, NULL, 'm'},
@@ -1342,9 +1102,6 @@ parse_options(int argc, char * const *argv)
 	const char *schedule_str = NULL;
 	const char *proc_schedule_str = NULL;
 	const char *io_schedule_str = NULL;
-#if WANT_SYSTEMD_NOTIFY
-	const char *notify_timeout_str = NULL;
-#endif
 	size_t changeuser_len;
 	int c;
 
@@ -1445,14 +1202,6 @@ parse_options(int argc, char * const *argv)
 		case 'b':  /* --background */
 			background = true;
 			break;
-#if WANT_SYSTEMD_NOTIFY
-		case OPT_NOTIFY_AWAIT:
-			notify_await = true;
-			break;
-		case OPT_NOTIFY_TIMEOUT:
-			notify_timeout_str = optarg;
-			break;
-#endif
 		case 'C': /* --no-close */
 			close_io = false;
 			break;
@@ -1510,12 +1259,6 @@ parse_options(int argc, char * const *argv)
 
 	if (output_io != NULL && output_io[0] != '/')
 		badusage("--output file needs to be an absolute filename");
-
-#if WANT_SYSTEMD_NOTIFY
-	if (notify_timeout_str != NULL)
-		if (parse_unsigned(notify_timeout_str, 10, &notify_timeout) != 0)
-			badusage("invalid notify timeout value");
-#endif
 
 	if (action == ACTION_NONE)
 		badusage("need one of --start or --stop or --status");
