@@ -312,39 +312,6 @@ reason. This is a last resort, and is only meant for programs that either
 make no sense forking on their own, or where it's not feasible to add the
 code for them to do this themselves.
 
-=item B<--notify-await>
-
-Wait for the background process to send a readiness notification before
-considering the service started (since version 1.19.3).
-This implements parts of the systemd readiness protocol, as specified
-in the B<sd_notify>(3) man page.
-The following variables are supported:
-
-=over
-
-=item B<READY=1>
-
-The program is ready to give service, so we can exit safely.
-
-=item B<EXTEND_TIMEOUT_USEC=>I<number>
-
-The program requests to extend the timeout by I<number> microseconds.
-This will reset the current timeout to the specified value.
-
-=item B<ERRNO=>I<number>
-
-The program is exiting with an error.
-Do the same and print the user-friendly string for the B<errno> value.
-
-=back
-
-=item B<--notify-timeout> I<timeout>
-
-Set a timeout for the B<--notify-await> option (since version 1.19.3).
-When the timeout is reached, B<start-stop-daemon> will exit with an
-error code, and no readiness notification will be awaited.
-The default is B<60> seconds.
-
 =item B<-C>, B<--no-close>
 
 Do not close any file descriptor when forcing the daemon into the background
