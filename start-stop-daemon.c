@@ -152,6 +152,11 @@
 #define SCHED_RR -1
 #endif
 
+/* At least macOS and AIX do not define this. */
+#ifndef SOCK_NONBLOCK
+#define SOCK_NONBLOCK 0
+#endif
+
 #ifndef array_count
 # define array_count(x) (sizeof(x) / sizeof((x)[0]))
 #endif
