@@ -8,7 +8,7 @@ all: start-stop-daemon start-stop-daemon.8
 	${CC} -c ${CFLAGS} ${CPPFLAGS} $<
 
 start-stop-daemon: start-stop-daemon.o
-	${CC} -o $@ ${LDFLAGS} $<
+	${LD} -o $@ ${LDFLAGS} $<
 
 start-stop-daemon.8: start-stop-daemon.8.pod
 	pod2man -r ${VERSION} -c ' ' -n start-stop-daemon -s 8 $< > $@

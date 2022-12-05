@@ -1,8 +1,6 @@
 # start-stop-daemon version
 VERSION = 20210417
 
-# Customize below to fit your system
-
 # paths
 PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
@@ -14,3 +12,4 @@ LDFLAGS  =
 
 # compiler and linker
 CC = cc
+LD = ${CC}
