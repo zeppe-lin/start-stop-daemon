@@ -11,6 +11,7 @@ start-stop-daemon: start-stop-daemon.o
 	${LD} -o $@ ${LDFLAGS} $<
 
 start-stop-daemon.8: start-stop-daemon.8.pod
+	podchecker $<
 	pod2man -r ${VERSION} -c ' ' -n start-stop-daemon -s 8 $< > $@
 
 install: all
