@@ -13,7 +13,7 @@ been rewritten.
 The original sources can be downloaded from:
 
   1. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git;a=summary
-  2. git://crux.nu/tools/start-stop-daemon.git
+  2. git clone git://crux.nu/tools/start-stop-daemon.git
 
 
 Dependencies
