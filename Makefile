@@ -18,9 +18,9 @@ check:
 	@grep -Eiho "https?://[^\"\\'> ]+" *.* | httpx -silent -fc 200 -sc
 
 install: all
-	install -d ${DESTDIR}${PREFIX}/sbin ${DESTDIR}${MANPREFIX}/man8
-	install -m 755 start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
-	install -m 644 start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man8/
+	mkdir -p ${DESTDIR}${PREFIX}/sbin ${DESTDIR}${MANPREFIX}/man8
+	cp -f start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
+	cp -f start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man1/
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/sbin/start-stop-daemon
