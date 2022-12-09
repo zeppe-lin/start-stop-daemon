@@ -11,8 +11,11 @@ start-stop-daemon: start-stop-daemon.o
 	${LD} -o $@ ${LDFLAGS} $<
 
 start-stop-daemon.8: start-stop-daemon.8.pod
-	podchecker $<
 	pod2man -r ${VERSION} -c ' ' -n start-stop-daemon -s 8 $< > $@
+
+check:
+	@podchecker start-stop-daemon.8.pod
+	@grep -Eiho "https?://[^\"\\'> ]+" *.* | httpx -silent -fc 200 -sc
 
 install: all
 	install -d ${DESTDIR}${PREFIX}/sbin ${DESTDIR}${MANPREFIX}/man8
