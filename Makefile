@@ -20,7 +20,7 @@ check:
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin ${DESTDIR}${MANPREFIX}/man8
 	cp -f start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
-	cp -f start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man1/
+	cp -f start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man8/
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/sbin/start-stop-daemon
