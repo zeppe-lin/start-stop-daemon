@@ -15,7 +15,6 @@ ABOUT start-stop-daemon
     1. git://crux.nu/tools/start-stop-daemon.git
     2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git;a=summary
 
-
 REQUIREMENTS
 
     Build time:
@@ -24,18 +23,17 @@ REQUIREMENTS
     * pod2man(1pm)
 
     Tests:
-    * podchecker(1pm) to check POD for errors
+    * podchecker(1pm) to check PODs for errors
     * httpx(1) to check URLs for non-200 response code
-
 
 INSTALL
 
-    The shell commands "make && make install" should build and install
-    this package.  See "config.mk" file for configuration parameters.
+    The shell command "make install" should build and install this
+    package.
 
-    The shell commands "make && make check" should build and start
-    some tests.  See "Makefile" for additional information.
-
+    The shell command "make check" should start some tests like
+    checking PODs for errors, checking URLs for non-200 response code,
+    etc.
 
 LICENSE
 
