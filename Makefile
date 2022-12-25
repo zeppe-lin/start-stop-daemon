@@ -18,13 +18,13 @@ check:
 	@grep -Eiho "https?://[^\"\\'> ]+" *.* | httpx -silent -fc 200 -sc
 
 install: all
-	mkdir -p ${DESTDIR}${PREFIX}/sbin ${DESTDIR}${MANPREFIX}/man8
-	cp -f start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
-	cp -f start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man8/
+	mkdir -p ${DESTDIR}/sbin ${DESTDIR}/usr/share/man/man8
+	cp -f start-stop-daemon   ${DESTDIR}/sbin/
+	cp -f start-stop-daemon.8 ${DESTDIR}/usr/share/man/man8/
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/sbin/start-stop-daemon
-	rm -f ${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
+	rm -f ${DESTDIR}/sbin/start-stop-daemon
+	rm -f ${DESTDIR}/usr/share/man/man8/start-stop-daemon.8
 
 clean:
 	rm start-stop-daemon start-stop-daemon.o start-stop-daemon.8
