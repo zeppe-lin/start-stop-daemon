@@ -444,7 +444,7 @@ Unable to determine program status.
 
 =back
 
-=head1 EXAMPLE
+=head1 EXAMPLES
 
 Start the B<food> daemon, unless one is already running (a process named
 food, running as user food, with pid in food.pid):
