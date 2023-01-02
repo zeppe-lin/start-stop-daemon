@@ -1,4 +1,2 @@
-* add --status-message option to display --status return codes as text
-
-This will help to get rid of boilerplate in */etc/rc.d/* files.
-
+* Add --status-message option to display --status return codes as text.
+  This will help to get rid of boilerplate in */etc/rc.d/* files.
