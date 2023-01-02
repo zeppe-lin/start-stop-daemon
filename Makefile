@@ -20,7 +20,8 @@ check:
 	@grep -Eiho "https?://[^\"\\'> ]+" *.* | httpx -silent -fc 200 -sc
 
 install: all
-	mkdir -p ${DESTDIR}/sbin ${DESTDIR}/usr/share/man/man8
+	mkdir -p ${DESTDIR}/sbin
+	mkdir -p ${DESTDIR}/usr/share/man/man8
 	cp -f start-stop-daemon   ${DESTDIR}/sbin/
 	cp -f start-stop-daemon.8 ${DESTDIR}/usr/share/man/man8/
 
