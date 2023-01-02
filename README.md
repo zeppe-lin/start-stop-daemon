@@ -7,34 +7,34 @@ processes.
 This distribution is a fork of CRUX' *SSD* as of commit 6209edb
 (Sat Apr 17 2021).  The CRUX' version of *SSD* is a patched version
 of Debian's *SSD* from dpkg distribution with adjustments for CRUX.
-This *SSD* have been applied these adjustments by default.  The
-systemd-related code have been removed.  Also, the build files
-have been rewritten.
+This *SSD* have the following little differences:
+  * applied CRUX' patch by default
+  * removed systemd-related code
+  * build files have been adjusted to suckless style
+
 See git log for further differences.
 
 The original sources can be downloaded from:
-1. git://crux.nu/tools/start-stop-daemon.git
-2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git;a=summary
+  1. git://crux.nu/tools/start-stop-daemon.git
+  2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git;a=summary
 
 REQUIREMENTS
 ------------
-**Build time:**
-- c99 compiler
-- POSIX sh(1p), make(1p) and "mandatory utilities"
-- pod2man(1pm)
+Build time:
+  * c99 compiler
+  * POSIX sh(1p), make(1p) and "mandatory utilities"
+  * pod2man(1pm) to build man page
 
-**Tests:**
-- podchecker(1pm) to check POD for errors
-- httpx(1) to check URLs for non-200 response code
+Tests:
+  * podchecker(1pm) to check PODs for errors
+  * httpx(1) to check URLs for non-200 response code
 
 INSTALL
 -------
-The shell command `make install` should build and install this
-package.
+The shell command `make && make install` should build and install this
+package.  See *config.mk* file for configuration parameters.
 
-The shell command `make check` should start some tests like
-checking POD for errors, checking URLs for non-200 response code,
-etc.
+The shell command `make check` should start some tests.
 
 LICENSE
 -------
