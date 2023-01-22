@@ -18,7 +18,7 @@ check:
 	@podchecker *.pod
 	@echo "=======> Check URLs for response code"
 	grep -Eiho "https?://[^\"\\'> ]+" *.* | xargs -P10 -I{} \
-		curl -o /dev/null -sw "%{url} [%{http_code}]\n" '{}'
+		curl -o /dev/null -sw "[%{http_code}] %{url}\n" '{}'
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
