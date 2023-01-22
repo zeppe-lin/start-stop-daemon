@@ -33,6 +33,6 @@ uninstall:
 	rm -f ${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 
 clean:
-	rm start-stop-daemon start-stop-daemon.o start-stop-daemon.8
+	rm -f start-stop-daemon start-stop-daemon.o start-stop-daemon.8
 
 .PHONY: all install uninstall clean
