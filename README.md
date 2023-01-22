@@ -1,19 +1,18 @@
 ABOUT
 -----
-This directory contains *start-stop-daemon* (*SSD*), a tool that is
+This directory contains _start-stop-daemon_ (_SSD_), a tool that is
 used to control the creation and termination of system-level
 processes.
 
-This distribution is a fork of CRUX' *SSD* as of commit 6209edb
-(Sat Apr 17 2021).  The CRUX' version of *SSD* is a patched version
-of Debian's *SSD* from dpkg distribution with adjustments for CRUX.
-This *SSD* have the following little differences:
-
+This distribution is a fork of CRUX' _SSD_ as of commit 6209edb
+(Sat Apr 17 2021).  The CRUX' version of _SSD_ is a patched version
+of Debian's _SSD_ from dpkg distribution with adjustments for CRUX.
+This _SSD_ have the following little differences:
   * applied CRUX' patch by default
   * removed systemd-related code
   * build files have been adjusted to suckless style
 
-See git log for further differences.
+See git log for complete/further differences.
 
 The original sources can be downloaded from:
   1. git://crux.nu/tools/start-stop-daemon.git
@@ -33,17 +32,15 @@ Tests:
 INSTALL
 -------
 The shell commands `make && make install` should build and install
-this package.  See *config.mk* file for configuration parameters.
+this package.  See _config.mk_ file for configuration parameters.
 
 The shell command `make check` should start some tests.
 
 LICENSE
 -------
 The following files have different licenses:
-
   * `start-stop-daemon.8.pod` is licensed through the GNU General
     Public License v2 <http://gnu.org/licenses/gpl.html>.
-
   * `start-stop-daemon.c` is licensed through Public Domain License
     <https://creativecommons.org/publicdomain/>.
 
