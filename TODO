@@ -1,9 +1,8 @@
 TODO start-stop-daemon
 
-    [ ] Add --status-message option to display --status return codes
-        as text.  This will help to get rid of boilerplate in
-        /etc/rc.d/ files.
+	[ ] Add --status-message option.
+	--status-message option to display --status return codes as
+	text.  This will help to get rid of boilerplate in /etc/rc.d/
+	files.
 
-
-vim:sw=2:ts=2:sts=2:et:cc=72:tw=70
 End of file.
