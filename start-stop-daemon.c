@@ -20,8 +20,6 @@
  * Changes by Ian Jackson: added --retry (and associated rearrangements).
  */
 
-# define ZEPPELIN "Zeppe-Lin"
-
 # define HAVE_SYS_PARAM_H
 # define HAVE_SYS_SYSCALL_H
 # define HAVE_SYS_USER_H
@@ -765,9 +763,9 @@ usage(void)
 static void
 do_version(void)
 {
-	printf("start-stop-daemon " VERSION " for " ZEPPELIN "\n\n"
+	printf("start-stop-daemon " VERSION " for " DISTRO "\n\n"
 		"Written by Marek Michalkiewicz, public domain.\n"
-		"Adjusted for " ZEPPELIN ".\n");
+		"Adjusted for " DISTRO ".\n");
 }
 
 static void DPKG_ATTR_NORET
