@@ -679,6 +679,7 @@ usage(void)
 {
 	printf(
 "Usage: start-stop-daemon [<option>...] <command>\n"
+"Start and stop system daemon programs.\n"
 "\n");
 
 	printf(
