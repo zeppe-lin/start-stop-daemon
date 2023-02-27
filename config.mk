@@ -6,7 +6,7 @@ PREFIX     = /usr/local
 MANPREFIX  = ${PREFIX}/share/man
 
 # flags
-CPPFLAGS   =
+CPPFLAGS   = -DVERSION=\"${VERSION}\"
 CFLAGS     = -std=c99 -pedantic -Wall -Wextra -Wformat
 LDFLAGS    =
 

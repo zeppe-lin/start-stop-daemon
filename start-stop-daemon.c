@@ -20,7 +20,6 @@
  * Changes by Ian Jackson: added --retry (and associated rearrangements).
  */
 
-# define VERSION "20210417"
 # define ZEPPELIN "Zeppe-Lin"
 
 # define HAVE_SYS_PARAM_H
