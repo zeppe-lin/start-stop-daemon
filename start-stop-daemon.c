@@ -639,9 +639,10 @@ daemonize(void)
 		 * a defined umask when creating the pidfile. */
 		umask(022);
 
-		if (mpidfile && pidfile != NULL)
+		if (mpidfile && pidfile != NULL) {
 			/* User wants _us_ to make the pidfile. */
 			write_pidfile(pidfile, pid);
+		}
 
 		_exit(0);
 	}
