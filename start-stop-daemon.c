@@ -1,15 +1,14 @@
 /*
- * A rewrite of the original Debian's start-stop-daemon Perl script
- * in C (faster - it is executed many times during system startup).
+ * A rewrite of the original Debian's start-stop-daemon Perl script in C
+ * (faster - it is executed many times during system startup).
  *
- * Written by Marek Michalkiewicz <marekm@i17linuxb.ists.pwr.wroc.pl>,
- * public domain.  Based conceptually on start-stop-daemon.pl, by Ian
- * Jackson <ijackson@gnu.ai.mit.edu>.  May be used and distributed
- * freely for any purpose.  Changes by Christian Schwarz
- * <schwarz@monet.m.isar.de>, to make output conform to the Debian
- * Console Message Standard, also placed in public domain.  Minor
- * changes by Klee Dienes <klee@debian.org>, also placed in the Public
- * Domain.
+ * Written by Marek Michalkiewicz <marekm@i17linuxb.ists.pwr.wroc.pl>, public
+ * domain.  Based conceptually on start-stop-daemon.pl, by Ian Jackson
+ * <ijackson@gnu.ai.mit.edu>.  May be used and distributed freely for any
+ * purpose.  Changes by Christian Schwarz <schwarz@monet.m.isar.de>, to make
+ * output conform to the Debian Console Message Standard, also placed in public
+ * domain.  Minor changes by Klee Dienes <klee@debian.org>, also placed in the
+ * Public Domain.
  *
  * Changes by Ben Collins <bcollins@debian.org>, added --chuid, --background
  * and --make-pidfile options, placed in public domain as well.
@@ -390,6 +389,7 @@ bug(const char *file, int line, const char *func, const char *format, ...)
 
 	fprintf(stderr, "%s:%s:%d:%s: internal error: ",
 	        progname, file, line, func);
+
 	va_start(arglist, format);
 	vfprintf(stderr, format, arglist);
 	va_end(arglist);
@@ -439,10 +439,10 @@ timespec_gettime(struct timespec *ts)
 #endif
 }
 
-#define timespec_cmp(a, b, OP) \
-	(((a)->tv_sec == (b)->tv_sec) ? \
-	 ((a)->tv_nsec OP (b)->tv_nsec) : \
-	 ((a)->tv_sec OP (b)->tv_sec))
+#define timespec_cmp(a, b, OP)             \
+	(((a)->tv_sec  == (b)->tv_sec)  ?  \
+	 ((a)->tv_nsec OP (b)->tv_nsec) :  \
+	 ((a)->tv_sec  OP (b)->tv_sec))
 
 static void
 timespec_sub(struct timespec *a, struct timespec *b, struct timespec *res)
@@ -764,8 +764,8 @@ static void
 do_version(void)
 {
 	printf("start-stop-daemon " VERSION " for " DISTRO "\n\n"
-		"Written by Marek Michalkiewicz, public domain.\n"
-		"Adjusted for " DISTRO ".\n");
+	       "Written by Marek Michalkiewicz, public domain.\n"
+	       "Adjusted for " DISTRO ".\n");
 }
 
 static void DPKG_ATTR_NORET
@@ -2429,7 +2429,7 @@ do_start(int argc, char **argv)
 		if (rgid != (gid_t)runas_gid || ruid != (uid_t)runas_uid)
 			if (initgroups(changeuser, runas_gid))
 				fatale("unable to set initgroups() with gid %d",
-				      runas_gid);
+				       runas_gid);
 
 		if (ruid != (uid_t)runas_uid)
 			if (setuid(runas_uid))
