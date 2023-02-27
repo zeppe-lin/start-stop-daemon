@@ -21,7 +21,7 @@
  */
 
 # define VERSION "20210417"
-# define CRUX "CRUX-Linux"
+# define ZEPPELIN "Zeppe-Lin"
 
 # define HAVE_SYS_PARAM_H
 # define HAVE_SYS_SYSCALL_H
@@ -766,9 +766,9 @@ usage(void)
 static void
 do_version(void)
 {
-	printf("start-stop-daemon " VERSION " for " CRUX "\n\n"
+	printf("start-stop-daemon " VERSION " for " ZEPPELIN "\n\n"
 		"Written by Marek Michalkiewicz, public domain.\n"
-		"Adjusted for " CRUX ".\n");
+		"Adjusted for " ZEPPELIN ".\n");
 }
 
 static void DPKG_ATTR_NORET
