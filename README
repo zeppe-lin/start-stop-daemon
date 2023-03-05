@@ -12,6 +12,7 @@ ABOUT start-stop-daemon
 		* applied CRUX' patch by default
 		* removed systemd-related code
 		* build files have been adjusted to suckless style
+		* various man page fixes
 
 	See git log for complete/further differences.
 
