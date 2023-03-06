@@ -11,7 +11,8 @@ start-stop-daemon: start-stop-daemon.o
 	${LD} $^ ${LDFLAGS} -o $@
 
 start-stop-daemon.8: start-stop-daemon.8.pod
-	pod2man -r ${VERSION} -c ' ' -n start-stop-daemon -s 8 $< > $@
+	pod2man -r "start-stop-daemon ${VERSION}" -c ' ' \
+		-n start-stop-daemon -s 8 $< > $@
 
 check:
 	@echo "=======> Check PODs for errors"
