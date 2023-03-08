@@ -66,25 +66,25 @@
 #define _KMEMUSER 1
 
 #ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
+# include <sys/param.h>
 #endif
 #ifdef HAVE_SYS_SYSCALL_H
-#include <sys/syscall.h>
+# include <sys/syscall.h>
 #endif
 #ifdef HAVE_SYS_SYSCTL_H
-#include <sys/sysctl.h>
+# include <sys/sysctl.h>
 #endif
 #ifdef HAVE_SYS_PROCFS_H
-#include <sys/procfs.h>
+# include <sys/procfs.h>
 #endif
 #ifdef HAVE_SYS_PROC_H
-#include <sys/proc.h>
+# include <sys/proc.h>
 #endif
 #ifdef HAVE_SYS_USER_H
-#include <sys/user.h>
+# include <sys/user.h>
 #endif
 #ifdef HAVE_SYS_PSTAT_H
-#include <sys/pstat.h>
+# include <sys/pstat.h>
 #endif
 #include <sys/types.h>
 #include <sys/time.h>
@@ -108,7 +108,7 @@
 #include <termios.h>
 #include <unistd.h>
 #ifdef HAVE_STDDEF_H
-#include <stddef.h>
+# include <stddef.h>
 #endif
 #include <stdbool.h>
 #include <stdarg.h>
@@ -116,36 +116,36 @@
 #include <stdio.h>
 #include <getopt.h>
 #ifdef HAVE_ERROR_H
-#include <error.h>
+# include <error.h>
 #endif
 #ifdef HAVE_ERR_H
-#include <err.h>
+# include <err.h>
 #endif
 
 #if defined(OS_Hurd)
-#include <hurd.h>
-#include <ps.h>
+# include <hurd.h>
+# include <ps.h>
 #endif
 
 #if defined(OS_Darwin)
-#include <libproc.h>
+# include <libproc.h>
 #endif
 
 #ifdef HAVE_KVM_H
-#include <kvm.h>
-#if defined(OS_FreeBSD)
-#define KVM_MEMFILE "/dev/null"
-#else
-#define KVM_MEMFILE NULL
-#endif
+# include <kvm.h>
+# if defined(OS_FreeBSD)
+#  define KVM_MEMFILE "/dev/null"
+# else
+#  define KVM_MEMFILE NULL
+# endif
 #endif
 
 #if defined(_POSIX_PRIORITY_SCHEDULING) && _POSIX_PRIORITY_SCHEDULING > 0
-#include <sched.h>
+# include <sched.h>
 #else
-#define SCHED_OTHER -1
-#define SCHED_FIFO -1
-#define SCHED_RR -1
+# define SCHED_OTHER -1
+# define SCHED_FIFO -1
+# define SCHED_RR -1
 #endif
 
 /* At least macOS and AIX do not define this. */
@@ -159,27 +159,27 @@
 
 #if defined(OS_Linux)
 /* This comes from TASK_COMM_LEN defined in Linux' include/linux/sched.h. */
-#define PROCESS_NAME_SIZE 15
+# define PROCESS_NAME_SIZE 15
 #elif defined(OS_Solaris)
-#define PROCESS_NAME_SIZE 15
+# define PROCESS_NAME_SIZE 15
 #elif defined(OS_Darwin)
-#define PROCESS_NAME_SIZE 16
+# define PROCESS_NAME_SIZE 16
 #elif defined(OS_AIX)
 /* This comes from PRFNSZ defined in AIX's <sys/procfs.h>. */
-#define PROCESS_NAME_SIZE 16
+# define PROCESS_NAME_SIZE 16
 #elif defined(OS_NetBSD)
-#define PROCESS_NAME_SIZE 16
+# define PROCESS_NAME_SIZE 16
 #elif defined(OS_OpenBSD)
-#define PROCESS_NAME_SIZE 16
+# define PROCESS_NAME_SIZE 16
 #elif defined(OS_FreeBSD)
-#define PROCESS_NAME_SIZE 19
+# define PROCESS_NAME_SIZE 19
 #elif defined(OS_DragonFlyBSD)
 /* On DragonFlyBSD MAXCOMLEN expands to 16. */
-#define PROCESS_NAME_SIZE MAXCOMLEN
+# define PROCESS_NAME_SIZE MAXCOMLEN
 #endif
 
 #if defined(SYS_ioprio_set) && defined(linux)
-#define HAVE_IOPRIO_SET
+# define HAVE_IOPRIO_SET
 #endif
 
 #define IOPRIO_CLASS_SHIFT 13
@@ -558,6 +558,7 @@ wait_for_child(pid_t pid)
 
 		if (ret != 0)
 			fatal("child returned error exit status %d", ret);
+
 	} else if (WIFSIGNALED(status)) {
 		int signo = WTERMSIG(status);
 
@@ -1069,38 +1070,38 @@ static void
 parse_options(int argc, char * const *argv)
 {
 	static struct option longopts[] = {
-		{ "help",	  0, NULL, 'H'},
-		{ "stop",	  0, NULL, 'K'},
-		{ "start",	  0, NULL, 'S'},
-		{ "status",	  0, NULL, 'T'},
-		{ "version",	  0, NULL, 'V'},
-		{ "startas",	  1, NULL, 'a'},
-		{ "name",	  1, NULL, 'n'},
-		{ "oknodo",	  0, NULL, 'o'},
-		{ "pid",	  1, NULL, OPT_PID},
-		{ "ppid",	  1, NULL, OPT_PPID},
-		{ "pidfile",	  1, NULL, 'p'},
-		{ "quiet",	  0, NULL, 'q'},
-		{ "signal",	  1, NULL, 's'},
-		{ "test",	  0, NULL, 't'},
-		{ "user",	  1, NULL, 'u'},
-		{ "group",	  1, NULL, 'g'},
-		{ "chroot",	  1, NULL, 'r'},
-		{ "verbose",	  0, NULL, 'v'},
-		{ "exec",	  1, NULL, 'x'},
-		{ "chuid",	  1, NULL, 'c'},
-		{ "nicelevel",	  1, NULL, 'N'},
-		{ "procsched",	  1, NULL, 'P'},
-		{ "iosched",	  1, NULL, 'I'},
-		{ "umask",	  1, NULL, 'k'},
-		{ "background",	  0, NULL, 'b'},
-		{ "no-close",	  0, NULL, 'C'},
-		{ "output",	  1, NULL, 'O'},
-		{ "make-pidfile", 0, NULL, 'm'},
-		{ "remove-pidfile", 0, NULL, OPT_RM_PIDFILE},
-		{ "retry",	  1, NULL, 'R'},
-		{ "chdir",	  1, NULL, 'd'},
-		{ NULL,		  0, NULL, 0  }
+		{ "help",		0, NULL, 'H'},
+		{ "stop",		0, NULL, 'K'},
+		{ "start",		0, NULL, 'S'},
+		{ "status",		0, NULL, 'T'},
+		{ "version",		0, NULL, 'V'},
+		{ "startas",		1, NULL, 'a'},
+		{ "name",		1, NULL, 'n'},
+		{ "oknodo",		0, NULL, 'o'},
+		{ "pid",		1, NULL, OPT_PID},
+		{ "ppid",		1, NULL, OPT_PPID},
+		{ "pidfile",		1, NULL, 'p'},
+		{ "quiet",		0, NULL, 'q'},
+		{ "signal",		1, NULL, 's'},
+		{ "test",		0, NULL, 't'},
+		{ "user",		1, NULL, 'u'},
+		{ "group",		1, NULL, 'g'},
+		{ "chroot",		1, NULL, 'r'},
+		{ "verbose",		0, NULL, 'v'},
+		{ "exec",		1, NULL, 'x'},
+		{ "chuid",		1, NULL, 'c'},
+		{ "nicelevel",		1, NULL, 'N'},
+		{ "procsched",		1, NULL, 'P'},
+		{ "iosched",		1, NULL, 'I'},
+		{ "umask",		1, NULL, 'k'},
+		{ "background",		0, NULL, 'b'},
+		{ "no-close",		0, NULL, 'C'},
+		{ "output",		1, NULL, 'O'},
+		{ "make-pidfile",	0, NULL, 'm'},
+		{ "remove-pidfile",	0, NULL, OPT_RM_PIDFILE},
+		{ "retry",		1, NULL, 'R'},
+		{ "chdir",		1, NULL, 'd'},
+		{ NULL,			0, NULL, 0  }
 	};
 	const char *pid_str = NULL;
 	const char *ppid_str = NULL;
@@ -1273,7 +1274,8 @@ parse_options(int argc, char * const *argv)
 	if (match_mode == MATCH_NONE ||
 	    (!execname && !cmdname && !userspec &&
 	     !pid_str && !ppid_str && !pidfile))
-		badusage("need at least one of --exec, --pid, --ppid, --pidfile, --user or --name");
+		badusage("need at least one of --exec, --pid, --ppid, "
+		         "--pidfile, --user or --name");
 
 #ifdef PROCESS_NAME_SIZE
 	if (cmdname && strlen(cmdname) > PROCESS_NAME_SIZE)
@@ -1603,7 +1605,7 @@ pid_is_exec(pid_t pid, const struct stat *esb)
 	if (pstat_getproc(&pst, sizeof(pst), (size_t)0, (int)pid) < 0)
 		return false;
 	return ((dev_t)pst.pst_text.psf_fsid.psfs_id == esb->st_dev &&
-	        (ino_t)pst.pst_text.psf_fileid == esb->st_ino);
+	        (ino_t)pst.pst_text.psf_fileid       == esb->st_ino);
 }
 #elif defined(OS_FreeBSD)
 static bool
@@ -1658,11 +1660,11 @@ pid_is_exec(pid_t pid, const struct stat *esb)
 
 	/* Find end of argv[0] then copy and cut of str there. */
 	end_argv_0_p = strchr(*pid_argv_p, ' ');
-	if (end_argv_0_p == NULL)
+	if (end_argv_0_p == NULL) {
 		/* There seems to be no space, so we have the command
 		 * already in its desired form. */
 		start_argv_0_p = *pid_argv_p;
-	else {
+	} else {
 		/* Tests indicate that this never happens, since
 		 * kvm_getargv itself cuts of tailing stuff. This is
 		 * not what the manpage says, however. */
@@ -2120,9 +2122,12 @@ do_pidfile(const char *name)
 			    ((st.st_uid != getuid() && st.st_uid != 0) ||
 			     ((st.st_gid != getgid() && st.st_gid != 0) &&
 			      (st.st_mode & 0020))))
-				fatal("matching only on non-root pidfile %s is insecure", name);
+				fatal("matching only on non-root pidfile %s "
+				      "is insecure", name);
+
 			if (st.st_mode & 0002)
-				fatal("matching on world-writable pidfile %s is insecure", name);
+				fatal("matching on world-writable pidfile %s "
+				      "is insecure", name);
 		}
 
 		if (fscanf(f, "%d", &pid) == 1)
@@ -2360,7 +2365,8 @@ do_start(int argc, char **argv)
 		if (changeuser != NULL) {
 			printf(" (as user %s[%d]", changeuser, runas_uid);
 			if (changegroup != NULL)
-				printf(", and group %s[%d])", changegroup, runas_gid);
+				printf(", and group %s[%d])", changegroup,
+				       runas_gid);
 			else
 				printf(")");
 		}
@@ -2419,22 +2425,25 @@ do_start(int argc, char **argv)
 	rgid = getgid();
 	ruid = getuid();
 	if (changegroup != NULL) {
-		if (rgid != (gid_t)runas_gid)
+		if (rgid != (gid_t)runas_gid) {
 			if (setgid(runas_gid))
 				fatale("unable to set gid to %d", runas_gid);
+		}
 	}
 	if (changeuser != NULL) {
 		/* We assume that if our real user and group are the same as
 		 * the ones we should switch to, the supplementary groups
 		 * will be already in place. */
-		if (rgid != (gid_t)runas_gid || ruid != (uid_t)runas_uid)
+		if (rgid != (gid_t)runas_gid || ruid != (uid_t)runas_uid) {
 			if (initgroups(changeuser, runas_gid))
 				fatale("unable to set initgroups() with gid %d",
 				       runas_gid);
+		}
 
-		if (ruid != (uid_t)runas_uid)
+		if (ruid != (uid_t)runas_uid) {
 			if (setuid(runas_uid))
 				fatale("unable to set uid to %s", changeuser);
+		}
 	}
 
 	if (background && output_fd >= 0) {
@@ -2691,3 +2700,6 @@ main(int argc, char **argv)
 
 	return 0;
 }
+
+/* vim:cc=80:tw=78
+ * End of file. */
