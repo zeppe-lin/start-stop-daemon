@@ -8,7 +8,7 @@ all: start-stop-daemon start-stop-daemon.8
 	${CC} -c ${CFLAGS} ${CPPFLAGS} $<
 
 start-stop-daemon: start-stop-daemon.o
-	${LD} $^ ${LDFLAGS} -o $@
+	${LD} start-stop-daemon.o ${LDFLAGS} -o $@
 
 start-stop-daemon.8: start-stop-daemon.8.pod
 	pod2man -r "start-stop-daemon ${VERSION}" -c ' ' \
@@ -18,8 +18,10 @@ check:
 	@echo "=======> Check PODs for errors"
 	@podchecker *.pod
 	@echo "=======> Check URLs for response code"
-	grep -Eiho "https?://[^\"\\'> ]+" *.* | xargs -P10 -I{} \
-		curl -o /dev/null -sw "[%{http_code}] %{url}\n" '{}'
+	grep -Eiho "https?://[^\"\\'> ]+" *.*        \
+		| xargs -P10 -I{} curl -o /dev/null  \
+		  -sw "[%{http_code}] %{url}\n" '{}' \
+		| sort -u
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
