@@ -17,8 +17,8 @@ OVERVIEW
 	See git log for complete/further differences.
 
 	The original sources can be downloaded from:
-	1. git://crux.nu/tools/start-stop-daemon.git
-	2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git;a=summary
+	1. git://crux.nu/tools/start-stop-daemon.git              (git)
+	2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git  (web)
 
 REQUIREMENTS
 
