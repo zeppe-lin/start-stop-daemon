@@ -14,11 +14,9 @@ start-stop-daemon.8:
 	pod2man -r "${NAME} ${VERSION}" -c ' ' \
 		-n start-stop-daemon -s 8 $< > $@
 
-install-dirs:
+install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
 	mkdir -p ${DESTDIR}${MANPREFIX}/man8
-
-install: all
 	cp -f start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
 	cp -f start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man8/
 	chmod 0755 ${DESTDIR}${PREFIX}/sbin/start-stop-daemon
