@@ -10,22 +10,15 @@ all: start-stop-daemon start-stop-daemon.8
 start-stop-daemon: start-stop-daemon.o
 	${LD} start-stop-daemon.o ${LDFLAGS} -o $@
 
-start-stop-daemon.8: start-stop-daemon.8.pod
-	pod2man -r "start-stop-daemon ${VERSION}" -c ' ' \
+start-stop-daemon.8:
+	pod2man -r "${NAME} ${VERSION}" -c ' ' \
 		-n start-stop-daemon -s 8 $< > $@
 
-check:
-	@echo "=======> Check PODs for errors"
-	@podchecker *.pod
-	@echo "=======> Check URLs for response code"
-	@grep -Eiho "https?://[^\"\\'> ]+" *.*       \
-		| xargs -P10 -I{} curl -o /dev/null  \
-		  -sw "[%{http_code}] %{url}\n" '{}' \
-		| sort -u
-
-install: all
+install-dirs:
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
 	mkdir -p ${DESTDIR}${MANPREFIX}/man8
+
+install: all
 	cp -f start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
 	cp -f start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man8/
 	chmod 0755 ${DESTDIR}${PREFIX}/sbin/start-stop-daemon

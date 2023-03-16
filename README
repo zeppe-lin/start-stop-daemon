@@ -28,17 +28,10 @@ REQUIREMENTS
 		* POSIX sh(1p), make(1p) and "mandatory utilities"
 		* pod2man(1pm) to build man page
 
-	Tests:
-
-		* podchecker(1pm) to check PODs for errors
-		* curl(1) to check URLs for response code
-
 INSTALL
 
 	The shell commands "make && make install" should build and install
 	this package.  See config.mk file for configuration parameters.
-
-	The shell command "make check" should start some tests.
 
 LICENSE
 
