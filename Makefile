@@ -11,8 +11,8 @@ start-stop-daemon: start-stop-daemon.o
 	${LD} start-stop-daemon.o ${LDFLAGS} -o $@
 
 start-stop-daemon.8:
-	pod2man -r "${NAME} ${VERSION}" -c ' ' \
-		-n start-stop-daemon -s 8 $< > $@
+	pod2man -r "${NAME} ${VERSION}" -c ' ' -n start-stop-daemon \
+		-s 8 start-stop-daemon.8.pod > $@
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
