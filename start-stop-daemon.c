@@ -1,22 +1,25 @@
 /*
- * A rewrite of the original Debian's start-stop-daemon Perl script in C
- * (faster - it is executed many times during system startup).
+ * A rewrite of the original Debian's start-stop-daemon Perl script in
+ * C (faster - it is executed many times during system startup).
  *
- * Written by Marek Michalkiewicz <marekm@i17linuxb.ists.pwr.wroc.pl>, public
- * domain.  Based conceptually on start-stop-daemon.pl, by Ian Jackson
- * <ijackson@gnu.ai.mit.edu>.  May be used and distributed freely for any
- * purpose.  Changes by Christian Schwarz <schwarz@monet.m.isar.de>, to make
- * output conform to the Debian Console Message Standard, also placed in public
- * domain.  Minor changes by Klee Dienes <klee@debian.org>, also placed in the
- * Public Domain.
+ * Written by Marek Michalkiewicz <marekm@i17linuxb.ists.pwr.wroc.pl>,
+ * public domain.  Based conceptually on start-stop-daemon.pl, by Ian
+ * Jackson <ijackson@gnu.ai.mit.edu>.  May be used and distributed
+ * freely for any purpose.  Changes by Christian Schwarz
+ * <schwarz@monet.m.isar.de>, to make output conform to the Debian
+ * Console Message Standard, also placed in public domain.  Minor
+ * changes by Klee Dienes <klee@debian.org>, also placed in the Public
+ * Domain.
  *
- * Changes by Ben Collins <bcollins@debian.org>, added --chuid, --background
- * and --make-pidfile options, placed in public domain as well.
+ * Changes by Ben Collins <bcollins@debian.org>:
+ *    * added --chuid, --background and --make-pidfile options,
+ *    * placed in public domain as well.
  *
  * Port to OpenBSD by Sontri Tomo Huynh <huynh.29@osu.edu>
  *                 and Andreas Schuldei <andreas@schuldei.org>
  *
- * Changes by Ian Jackson: added --retry (and associated rearrangements).
+ * Changes by Ian Jackson:
+ *    * added --retry (and associated rearrangements).
  */
 
 # define HAVE_SYS_PARAM_H
@@ -264,11 +267,11 @@ static struct proc_stat_list *procset = NULL;
 
 /* LSB Init Script process status exit codes. */
 enum status_code {
-	STATUS_OK = 0,
-	STATUS_DEAD_PIDFILE = 1,
+	STATUS_OK            = 0,
+	STATUS_DEAD_PIDFILE  = 1,
 	STATUS_DEAD_LOCKFILE = 2,
-	STATUS_DEAD = 3,
-	STATUS_UNKNOWN = 4,
+	STATUS_DEAD          = 3,
+	STATUS_UNKNOWN       = 4,
 };
 
 struct pid_list {
@@ -276,7 +279,7 @@ struct pid_list {
 	pid_t pid;
 };
 
-static struct pid_list *found = NULL;
+static struct pid_list *found  = NULL;
 static struct pid_list *killed = NULL;
 
 /* Resource scheduling policy. */
@@ -605,8 +608,8 @@ daemonize(void)
 
 	debug("Detaching to start %s...\n", startas);
 
-	/* Block SIGCHLD to allow waiting for the child process while it is
-	 * performing actions, such as creating a pidfile. */
+	/* Block SIGCHLD to allow waiting for the child process while
+	 * it is performing actions, such as creating a pidfile. */
 	sigemptyset(&mask);
 	sigaddset(&mask, SIGCHLD);
 	if (sigprocmask(SIG_BLOCK, &mask, &oldmask) == -1)
@@ -615,10 +618,15 @@ daemonize(void)
 	pid = fork();
 	if (pid < 0)
 		fatale("unable to do first fork");
-	else if (pid) { /* First Parent. */
-		/* Wait for the second parent to exit, so that if we need to
-		 * perform any actions there, like creating a pidfile, we do
-		 * not suffer from race conditions on return. */
+	else if (pid) {
+		/*
+		 * First Parent.
+		 */
+
+		/* Wait for the second parent to exit, so that if we
+		 * need to perform any actions there, like creating a
+		 * pidfile, we do not suffer from race conditions on
+		 * return. */
 		wait_for_child(pid);
 
 		_exit(0);
@@ -631,10 +639,15 @@ daemonize(void)
 	pid = fork();
 	if (pid < 0)
 		fatale("unable to do second fork");
-	else if (pid) { /* Second parent. */
-		/* Set a default umask for dumb programs, which might get
-		 * overridden by the --umask option later on, so that we get
-		 * a defined umask when creating the pidfile. */
+	else if (pid) {
+		/*
+		 * Second parent.
+		 */
+
+		/* Set a default umask for dumb programs, which might
+		 * get overridden by the --umask option later on, so
+		 * that we get a defined umask when creating the
+		 * pidfile. */
 		umask(022);
 
 		if (mpidfile && pidfile != NULL) {
@@ -1000,8 +1013,8 @@ parse_schedule(const char *schedule_str)
 		schedule[0].value = signal_nr;
 		parse_schedule_item(schedule_str, &schedule[1]);
 		if (schedule[1].type != sched_timeout) {
-			badusage("--retry takes timeout, or schedule list"
-			         " of at least two items");
+			badusage("--retry takes timeout, or schedule "
+			         "list of at least two items");
 		}
 		schedule[2].type = sched_signal;
 		schedule[2].value = SIGKILL;
@@ -1018,8 +1031,10 @@ parse_schedule(const char *schedule_str)
 			slash = strchrnul(schedule_str, '/');
 			str_len = (size_t)(slash - schedule_str);
 			if (str_len >= sizeof(item_buf))
-				badusage("invalid schedule item: far too long"
-				         " (you must delimit items with slashes)");
+				badusage("invalid schedule item: "
+				         "far too long "
+				         "(you must delimit items "
+				         "with slashes)");
 			memcpy(item_buf, schedule_str, str_len);
 			item_buf[str_len] = '\0';
 			schedule_str = *slash ? slash + 1 : slash;
@@ -1027,16 +1042,17 @@ parse_schedule(const char *schedule_str)
 			parse_schedule_item(item_buf, &schedule[count]);
 			if (schedule[count].type == sched_forever) {
 				if (repeatat >= 0)
-					badusage("invalid schedule: 'forever'"
-					         " appears more than once");
+					badusage("invalid schedule: "
+					         "'forever' appears "
+						 "more than once");
 				repeatat = count;
 				continue;
 			}
 			count++;
 		}
 		if (repeatat == count)
-			badusage("invalid schedule: 'forever' appears last, "
-			         "nothing to repeat");
+			badusage("invalid schedule: 'forever' appears "
+			         "last, nothing to repeat");
 		if (repeatat >= 0) {
 			schedule[count].type = sched_goto;
 			schedule[count].value = repeatat;
@@ -1523,9 +1539,9 @@ pid_is_exec(pid_t pid, const struct stat *esb)
 	filename = lcontents;
 	filename[nread] = '\0';
 
-	/* OpenVZ kernels contain a bogus patch that instead of appending,
-	 * prepends the deleted marker. Workaround those. Otherwise handle
-	 * the normal appended marker. */
+	/* OpenVZ kernels contain a bogus patch that instead of
+	 * appending, prepends the deleted marker.  Workaround those.
+	 * Otherwise handle the normal appended marker. */
 	if (strncmp(filename, deleted, strlen(deleted)) == 0)
 		filename += strlen(deleted);
 	else if (strcmp(filename + nread - strlen(deleted), deleted) == 0)
@@ -1562,8 +1578,8 @@ pid_is_exec(pid_t pid, const struct stat *esb)
 	if (ps == NULL)
 		return false;
 
-	/* On old Hurd systems we have to use the argv[0] value, because
-	 * there is nothing better. */
+	/* On old Hurd systems we have to use the argv[0] value,
+	 * because there is nothing better. */
 	filename = proc_stat_args(ps);
 #ifdef PSTAT_EXE
 	/* On new Hurd systems we can use the correct value, as long
@@ -1666,7 +1682,7 @@ pid_is_exec(pid_t pid, const struct stat *esb)
 		start_argv_0_p = *pid_argv_p;
 	} else {
 		/* Tests indicate that this never happens, since
-		 * kvm_getargv itself cuts of tailing stuff. This is
+		 * kvm_getargv itself cuts of tailing stuff.  This is
 		 * not what the manpage says, however. */
 		strncpy(buf, *pid_argv_p, (end_argv_0_p - start_argv_0_p));
 		buf[(end_argv_0_p - start_argv_0_p) + 1] = '\0';
@@ -1952,9 +1968,10 @@ pid_is_cmd(pid_t pid, const char *name)
 	if (strcmp(binary_name, name) == 0)
 		return true;
 
-	/* XXX: This is all kinds of ugly, but on the Hurd there's no way to
-	 * know the command name of a process, so we have to try to match
-	 * also on argv[1] for the case of an interpreted script. */
+	/* XXX: This is all kinds of ugly, but on the Hurd there's no
+	 * way to know the command name of a process, so we have to
+	 * try to match also on argv[1] for the case of an interpreted
+	 * script. */
 	if (proc_stat_args_len(ps) > argv0_len) {
 		const char *script_name = basename(argv0 + argv0_len);
 
@@ -2101,16 +2118,17 @@ do_pidfile(const char *name)
 	if (f) {
 		enum status_code pid_status;
 
-		/* If we are only matching on the pidfile, and it is owned by
-		 * a non-root user, then this is a security risk, and the
-		 * contents cannot be trusted, because the daemon might have
-		 * been compromised.
+		/* If we are only matching on the pidfile, and it is
+		 * owned by a non-root user, then this is a security
+		 * risk, and the contents cannot be trusted, because
+		 * the daemon might have been compromised.
 		 *
-		 * If the pidfile is world-writable we refuse to parse it.
+		 * If the pidfile is world-writable we refuse to parse
+		 * it.
 		 *
-		 * If we got /dev/null specified as the pidfile, we ignore the
-		 * checks, as this is being used to run processes no matter
-		 * what. */
+		 * If we got /dev/null specified as the pidfile, we
+		 * ignore the checks, as this is being used to run
+		 * processes no matter what. */
 		if (strcmp(name, "/dev/null") != 0) {
 			struct stat st;
 			int fd = fileno(f);
@@ -2392,7 +2410,8 @@ do_start(int argc, char **argv)
 		/* Ok, we need to detach this process. */
 		daemonize();
 	else if (mpidfile && pidfile != NULL)
-		/* User wants _us_ to make the pidfile, but detach themself! */
+		/* User wants _us_ to make the pidfile, but detach
+		 * themself! */
 		write_pidfile(pidfile, getpid());
 	if (background && close_io) {
 		devnull_fd = open("/dev/null", O_RDONLY);
@@ -2431,9 +2450,9 @@ do_start(int argc, char **argv)
 		}
 	}
 	if (changeuser != NULL) {
-		/* We assume that if our real user and group are the same as
-		 * the ones we should switch to, the supplementary groups
-		 * will be already in place. */
+		/* We assume that if our real user and group are the
+		 * same as the ones we should switch to, the
+		 * supplementary groups will be already in place. */
 		if (rgid != (gid_t)runas_gid || ruid != (uid_t)runas_uid) {
 			if (initgroups(changeuser, runas_gid))
 				fatale("unable to set initgroups() with gid %d",
@@ -2526,24 +2545,25 @@ set_what_stop(const char *format, ...)
 }
 
 /*
- * We want to keep polling for the processes, to see if they've exited, or
- * until the timeout expires.
+ * We want to keep polling for the processes, to see if they've
+ * exited, or until the timeout expires.
  *
- * This is a somewhat complicated algorithm to try to ensure that we notice
- * reasonably quickly when all the processes have exited, but don't spend
- * too much CPU time polling. In particular, on a fast machine with
- * quick-exiting daemons we don't want to delay system shutdown too much,
- * whereas on a slow one, or where processes are taking some time to exit,
- * we want to increase the polling interval.
+ * This is a somewhat complicated algorithm to try to ensure that we
+ * notice reasonably quickly when all the processes have exited, but
+ * don't spend too much CPU time polling. In particular, on a fast
+ * machine with quick-exiting daemons we don't want to delay system
+ * shutdown too much, whereas on a slow one, or where processes are
+ * taking some time to exit, we want to increase the polling interval.
  *
- * The algorithm is as follows: we measure the elapsed time it takes to do
- * one poll(), and wait a multiple of this time for the next poll. However,
- * if that would put us past the end of the timeout period we wait only as
- * long as the timeout period, but in any case we always wait at least
- * MIN_POLL_INTERVAL (20ms). The multiple (‘ratio’) starts out as 2, and
- * increases by 1 for each poll to a maximum of 10; so we use up to between
- * 30% and 10% of the machine's resources (assuming a few reasonable things
- * about system performance).
+ * The algorithm is as follows: we measure the elapsed time it takes
+ * to do one poll(), and wait a multiple of this time for the next
+ * poll. However, if that would put us past the end of the timeout
+ * period we wait only as long as the timeout period, but in any case
+ * we always wait at least MIN_POLL_INTERVAL (20ms). The multiple
+ * (‘ratio’) starts out as 2, and increases by 1 for each poll to a
+ * maximum of 10; so we use up to between 30% and 10% of the machine's
+ * resources (assuming a few reasonable things about system
+ * performance).
  */
 static bool
 do_stop_timeout(int timeout, int *n_killed, int *n_notkilled)
@@ -2701,5 +2721,5 @@ main(int argc, char **argv)
 	return 0;
 }
 
-/* vim:cc=80:tw=78
+/* vim:cc=72:tw=70
  * End of file. */
