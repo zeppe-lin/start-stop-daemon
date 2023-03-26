@@ -2567,7 +2567,7 @@ static bool
 do_stop_timeout(int timeout, int *n_killed, int *n_notkilled)
 {
 	struct timespec stopat, before, after, interval, maxinterval;
-	int rc, ratio;
+	int ratio;
 
 	timespec_gettime(&stopat);
 	stopat.tv_sec += timeout;
@@ -2603,7 +2603,7 @@ do_stop_timeout(int timeout, int *n_killed, int *n_notkilled)
 		    interval.tv_nsec <= MIN_POLL_INTERVAL)
 			interval.tv_nsec = MIN_POLL_INTERVAL;
 
-		rc = pselect(0, NULL, NULL, NULL, &interval, NULL);
+		int rc = pselect(0, NULL, NULL, NULL, &interval, NULL);
 		if (rc < 0 && errno != EINTR)
 			fatale("select() failed for pause");
 	}
