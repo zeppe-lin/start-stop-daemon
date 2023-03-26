@@ -2260,10 +2260,8 @@ do_procinit(void)
 	enum status_code prog_status = STATUS_DEAD;
 
 	while ((count = pstat_getproc(pst, sizeof(pst[0]), 10, idx)) > 0) {
-		enum status_code pid_status;
-
 		for (i = 0; i < count; i++) {
-			pid_status = pid_check(pst[i].pst_pid);
+			enum status_code pid_status = pid_check(pst[i].pst_pid);
 			if (pid_status < prog_status)
 				prog_status = pid_status;
 		}
