@@ -2653,6 +2653,8 @@ run_stop_schedule(void)
 
 	anykilled = false;
 	retry_nr = 0;
+	n_killed = 0;
+	n_notkilled = 0;
 
 	if (schedule == NULL) {
 		do_stop(signal_nr, &n_killed, &n_notkilled);
