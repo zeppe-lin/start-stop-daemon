@@ -28,5 +28,9 @@ uninstall:
 
 clean:
 	rm -f start-stop-daemon start-stop-daemon.o start-stop-daemon.8
+	rm -f ${DIST}.tar.gz
 
-.PHONY: all install uninstall clean
+dist: clean
+	git archive --format=tar.gz -o ${DIST}.tar.gz --prefix=${DIST}/ HEAD
+
+.PHONY: all install uninstall clean dist
