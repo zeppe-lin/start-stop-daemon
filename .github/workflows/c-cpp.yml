@@ -1,19 +1,46 @@
-name: C/C++ CI
-
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+name: Github CI
+on: [push, pull_request, create]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Check PODs for errors
-      run: podchecker *.pod
-    - name: make
-      run: make
+      - uses: actions/checkout@v3
+
+      - name: IRC Push Notification
+        uses: Gottox/irc-message-action@v2
+        if: github.event_name == 'push'
+        with:
+          channel: '#zeppe-lin'
+          nickname: zeppbot
+          message: |-
+            ${{ github.actor }} pushed ${{ github.event.ref }} ${{ github.event.compare }}
+            ${{ join(github.event.commits.*.message, ', ') }}
+            https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+
+      - name: IRC Pull Request Notification
+        uses: Gottox/irc-message-action@v2
+        if: github.event_name == 'pull_request'
+        with:
+          channel: '#zeppe-lin'
+          nickname: zeppbot
+          message: |-
+            ${{ github.actor }} opened PR ${{ github.event.pull_request.html_url }}
+
+      - name: IRC Tag Created Notification
+        uses: Gottox/irc-message-action@v2
+        if: github.event_name == 'create' && github.event.ref_type == 'tag'
+        with:
+          channel: '#zeppe-lin'
+          nickname: zeppbot
+          message: |-
+            ${{ github.actor }} tagged ${{ github.repository }} ${{ github.event.ref }}
+
+      - name: Check PODs for errors
+        run: podchecker *.pod
+
+      - name: make
+        run: make
+
+# End of file.
