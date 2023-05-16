@@ -1,25 +1,25 @@
-name: Github CI
+name: IRC Notification CI
 on: [push, pull_request, create]
 
 jobs:
-  test:
+
+  notify:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: IRC Push Notification
+      - name: Push Notification
         uses: Gottox/irc-message-action@v2
         if: github.event_name == 'push'
         with:
           channel: '#zeppe-lin'
           nickname: zeppbot
           message: |-
-            ${{ github.actor }} pushed ${{ github.event.ref }} ${{ github.event.compare }}
-            ${{ join(github.event.commits.*.message, ', ') }}
-            https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+            ${{ github.actor }} pushed ${{ github.event.repository.name }}:${{ github.ref_name || github.event.ref }}
+            ${{ join(github.event.commits.*.message, '
+            ') }}
+            ${{ github.event.compare }}
 
-      - name: IRC Pull Request Notification
+      - name: Pull Request Notification
         uses: Gottox/irc-message-action@v2
         if: github.event_name == 'pull_request'
         with:
@@ -28,19 +28,13 @@ jobs:
           message: |-
             ${{ github.actor }} opened PR ${{ github.event.pull_request.html_url }}
 
-      - name: IRC Tag Created Notification
+      - name: Tag Created Notification
         uses: Gottox/irc-message-action@v2
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
         with:
           channel: '#zeppe-lin'
           nickname: zeppbot
           message: |-
-            ${{ github.actor }} tagged ${{ github.repository }} ${{ github.event.ref }}
-
-      - name: Check PODs for errors
-        run: podchecker *.pod
-
-      - name: make
-        run: make
+            ${{ github.actor }} tagged ${{ github.repository }}:${{ github.event.ref }}
 
 # End of file.
