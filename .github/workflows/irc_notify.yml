@@ -1,5 +1,5 @@
 name: IRC Notification CI
-on: [push, pull_request, create]
+on: [push, pull_request]
 
 jobs:
 
@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Push Notification
         uses: Gottox/irc-message-action@v2
         if: github.event_name == 'push'
@@ -14,12 +15,11 @@ jobs:
           channel: '#zeppe-lin'
           nickname: zeppbot
           message: |-
-            ${{ github.actor }} pushed ${{ github.event.repository.name }}:${{ github.ref_name || github.event.ref }}
+            ${{ github.actor }} pushed ${{ github.event.repository.name }}:${{ github.ref_name || github.event.ref }} -- ${{ github.event.compare }}
             ${{ join(github.event.commits.*.message, '
             ') }}
-            ${{ github.event.compare }}
 
-      - name: Pull Request Notification
+      - name: PR Notification
         uses: Gottox/irc-message-action@v2
         if: github.event_name == 'pull_request'
         with:
@@ -27,14 +27,5 @@ jobs:
           nickname: zeppbot
           message: |-
             ${{ github.actor }} opened PR ${{ github.event.pull_request.html_url }}
-
-      - name: Tag Created Notification
-        uses: Gottox/irc-message-action@v2
-        if: github.event_name == 'create' && github.event.ref_type == 'tag'
-        with:
-          channel: '#zeppe-lin'
-          nickname: zeppbot
-          message: |-
-            ${{ github.actor }} tagged ${{ github.repository }}:${{ github.event.ref }}
 
 # End of file.
