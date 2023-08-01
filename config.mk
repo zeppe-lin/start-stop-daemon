@@ -13,5 +13,5 @@ CFLAGS    = -std=c99 -pedantic -Wall -Wextra -Wformat
 LDFLAGS   =
 
 # compiler and linker
-CC = cc
-LD = ${CC}
+CC        = cc
+LD        = ${CC}
