@@ -3,8 +3,9 @@
 *.o
 start-stop-daemon
 
-# vim undo files
+# vim undo and swap files
 .*.un~
+*.swp
 
 # backup files
 *.bak
