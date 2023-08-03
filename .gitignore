@@ -1,0 +1,13 @@
+# build files and artefacts
+*.8
+*.o
+start-stop-daemon
+
+# vim undo files
+.*.un~
+
+# backup files
+*.bak
+
+# dist tarballs
+*.tar.gz
