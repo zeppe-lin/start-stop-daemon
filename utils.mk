@@ -1,3 +1,6 @@
+# Makefile.lint is the automated checking of start-stop-daemon project
+# for various programmatic and stylistic errors.
+
 all: deadlinks podchecker shellcheck cppcheck flawfinder longlines
 
 deadlinks:
