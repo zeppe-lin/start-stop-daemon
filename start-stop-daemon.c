@@ -778,9 +778,9 @@ usage(void)
 static void
 do_version(void)
 {
-	printf("start-stop-daemon " VERSION " for " DISTRO "\n\n"
+	printf("start-stop-daemon " VERSION "\n\n"
 	       "Written by Marek Michalkiewicz, public domain.\n"
-	       "Adjusted for " DISTRO ".\n");
+	       "Adjusted for Zeppe-Lin GNU/Linux.\n");
 }
 
 static void DPKG_ATTR_NORET
