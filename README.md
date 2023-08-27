@@ -24,7 +24,8 @@ REQUIREMENTS
 ------------
 **Build time**:
 - c99 compiler
-- POSIX sh(1p), make(1p) and "mandatory utilities"
+- POSIX sh(1p) and "mandatory utilities"
+- GNU make(1)
 - pod2man(1pm) to build man page
 
 
