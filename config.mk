@@ -8,8 +8,7 @@ PREFIX    = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 
 # flags
-CPPFLAGS  = -DVERSION=\"${VERSION}\" -DDISTRO=\"Zeppe-Lin\"
-CFLAGS    = -std=c99 -pedantic -Wall -Wextra -Wformat
+CFLAGS    = -std=c99 -pedantic -Wall -Wextra -Wformat -DVERSION=\"${VERSION}\"
 LDFLAGS   =
 
 # compiler and linker
