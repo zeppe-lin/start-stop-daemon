@@ -34,10 +34,6 @@
 # define HAVE_IOPRIO_SET
 # define HAVE_SETSID
 
-# define DPKG_ATTR_NORET __attribute__((noreturn))
-# define DPKG_ATTR_PRINTF(X)
-# define DPKG_ATTR_VPRINTF(X)
-
 # define _GNU_SOURCE
 # include <unistd.h>
 
@@ -211,13 +207,13 @@ enum action_code {
 };
 
 enum match_code {
-	MATCH_NONE	= 0,
-	MATCH_PID	= 1 << 0,
-	MATCH_PPID	= 1 << 1,
-	MATCH_PIDFILE	= 1 << 2,
-	MATCH_EXEC	= 1 << 3,
-	MATCH_NAME	= 1 << 4,
-	MATCH_USER	= 1 << 5,
+	MATCH_NONE    = 0,
+	MATCH_PID     = 1 << 0,
+	MATCH_PPID    = 1 << 1,
+	MATCH_PIDFILE = 1 << 2,
+	MATCH_EXEC    = 1 << 3,
+	MATCH_NAME    = 1 << 4,
+	MATCH_USER    = 1 << 5,
 };
 
 /* Time conversion constants. */
@@ -308,7 +304,7 @@ static int schedule_length;
 static struct schedule_item *schedule = NULL;
 
 
-static void DPKG_ATTR_PRINTF(1)
+static void
 debug(const char *format, ...)
 {
 	va_list arglist;
@@ -321,7 +317,7 @@ debug(const char *format, ...)
 	va_end(arglist);
 }
 
-static void DPKG_ATTR_PRINTF(1)
+static void
 info(const char *format, ...)
 {
 	va_list arglist;
@@ -334,7 +330,7 @@ info(const char *format, ...)
 	va_end(arglist);
 }
 
-static void DPKG_ATTR_PRINTF(1)
+static void
 warning(const char *format, ...)
 {
 	va_list arglist;
@@ -345,7 +341,7 @@ warning(const char *format, ...)
 	va_end(arglist);
 }
 
-static void DPKG_ATTR_NORET DPKG_ATTR_VPRINTF(2)
+static void __attribute__((noreturn))
 fatalv(int errno_fatal, const char *format, va_list args)
 {
 	va_list args_copy;
@@ -365,7 +361,7 @@ fatalv(int errno_fatal, const char *format, va_list args)
 		exit(2);
 }
 
-static void DPKG_ATTR_NORET DPKG_ATTR_PRINTF(1)
+static void __attribute__((noreturn))
 fatal(const char *format, ...)
 {
 	va_list args;
@@ -374,7 +370,7 @@ fatal(const char *format, ...)
 	fatalv(0, format, args);
 }
 
-static void DPKG_ATTR_NORET DPKG_ATTR_PRINTF(1)
+static void __attribute__((noreturn))
 fatale(const char *format, ...)
 {
 	va_list args;
@@ -385,7 +381,7 @@ fatale(const char *format, ...)
 
 #define BUG(...) bug(__FILE__, __LINE__, __func__, __VA_ARGS__)
 
-static void DPKG_ATTR_NORET DPKG_ATTR_PRINTF(4)
+static void __attribute__((noreturn))
 bug(const char *file, int line, const char *func, const char *format, ...)
 {
 	va_list arglist;
@@ -783,7 +779,7 @@ do_version(void)
 	       "Adjusted for Zeppe-Lin GNU/Linux.\n");
 }
 
-static void DPKG_ATTR_NORET
+static void __attribute__((noreturn))
 badusage(const char *msg)
 {
 	if (msg)
@@ -2528,7 +2524,7 @@ do_stop_summary(int retry_nr)
 	printf(".\n");
 }
 
-static void DPKG_ATTR_PRINTF(1)
+static void
 set_what_stop(const char *format, ...)
 {
 	va_list arglist;
