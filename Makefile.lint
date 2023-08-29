@@ -3,8 +3,12 @@
 
 CURMAKE = $(MAKE) -s -f Makefile.lint
 
-all: greplinks curllinks deadlinks \
+all:	greplinks curllinks deadlinks \
 	podchecker shellcheck cppcheck flawfinder longlines
+
+######################################################################
+# Helpers.                                                           #
+######################################################################
 
 greplinks:
 	@grep -EIihor "https?://[^\"\\'> ]+" --exclude-dir=.git*
@@ -13,7 +17,12 @@ curllinks:
 	@$(CURMAKE) greplinks | xargs -I{} -r -P10 \
 		curl -I -o/dev/null -sw "[%{http_code}] %{url}\n" '{}'
 
+######################################################################
+# Main Targets.                                                      #
+######################################################################
+
 deadlinks:
+	@echo "=======> Check for dead links"
 	@$(CURMAKE) curllinks | grep -v '^\[200\]' | sort -u
 
 podchecker:
@@ -37,6 +46,8 @@ flawfinder:
 longlines:
 	@echo "=======> Check for long lines"
 	@! grep -PIrn '^.{81,}$$' --exclude-dir=.git*
+
+######################################################################
 
 .PHONY: all greplinks curllinks deadlinks \
 	podchecker shellcheck cppcheck flawfinder longlines
