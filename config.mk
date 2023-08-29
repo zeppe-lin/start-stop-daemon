@@ -8,9 +8,5 @@ PREFIX    = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 
 # flags
-CFLAGS    = -std=c99 -pedantic -Wall -Wextra -Wformat -DVERSION=\"${VERSION}\"
+CFLAGS    = -pedantic -Wall -Wextra -Wformat -DVERSION=\"${VERSION}\"
 LDFLAGS   =
-
-# compiler and linker
-CC        = cc
-LD        = ${CC}
