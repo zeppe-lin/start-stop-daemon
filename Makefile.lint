@@ -27,7 +27,7 @@ deadlinks:
 
 podchecker:
 	@echo "=======> Check PODs for syntax errors"
-	@podchecker *.pod >/dev/null
+	@find . -name '*.pod' -exec podchecker {} +
 
 shellcheck:
 	@echo "=======> Check shell scripts for syntax errors"
