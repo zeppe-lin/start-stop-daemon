@@ -40,7 +40,7 @@ cppcheck:
 		--suppress=missingIncludeSystem .
 
 flawfinder:
-	@echo "=======> Check for porential security flaws"
+	@echo "=======> Check for potential security flaws"
 	@flawfinder --quiet -D .
 
 longlines:
