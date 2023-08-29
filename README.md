@@ -8,10 +8,10 @@ This distribution is a fork of CRUX' SSD as of commit 6209edb (Sat Apr
 SSD from dpkg distribution with adjustments for CRUX.
 
 This SSD have the following little differences:
-- applied CRUX' patch by default
-- removed systemd-related code
-- build files have been adjusted to suckless style
-- various man page fixes
+- CRUX' patch by default
+- no systemd-related code
+- suckless style build
+- various fixes and cleanups
 
 See git log for complete/further differences.
 
@@ -23,9 +23,9 @@ The original sources can be downloaded from:
 REQUIREMENTS
 ------------
 **Build time**:
-- c99 compiler
+- C99 compiler
 - POSIX sh(1p) and "mandatory utilities"
-- GNU make(1)
+- GNU/BSD make(1)
 - pod2man(1pm) to build man page
 
 
@@ -38,9 +38,9 @@ this package.  See `config.mk` file for configuration parameters.
 LICENSE
 -------
 The following files have different licenses:
-- start-stop-daemon.8.pod is licensed through the GNU General Public
+- `start-stop-daemon.8.pod` is licensed through the GNU General Public
   License v2 <http://gnu.org/licenses/gpl.html>.
-- start-stop-daemon.c is licensed through Public Domain License
+- `start-stop-daemon.c` is licensed through Public Domain License
   <https://creativecommons.org/publicdomain/>.
 
 Other files in this distribution are licensed through the same Public
