@@ -1,5 +1,5 @@
-# Makefile.lint is the automated checking of start-stop-daemon project
-# for various programmatic and stylistic errors.  Requires GNU make(1).
+# Makefile.lint is the automated checking of this project for various
+# programmatic and stylistic errors.  Requires GNU make(1).
 
 CURMAKE = $(MAKE) -s -f Makefile.lint
 
