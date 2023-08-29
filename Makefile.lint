@@ -1,15 +1,20 @@
 # Makefile.lint is the automated checking of start-stop-daemon project
 # for various programmatic and stylistic errors.
 
-all: deadlinks podchecker shellcheck cppcheck flawfinder longlines
+CURMAKE = $(MAKE) -s -f Makefile.lint
+
+all: greplinks curllinks deadlinks \
+	podchecker shellcheck cppcheck flawfinder longlines
+
+greplinks:
+	@grep -EIihor "https?://[^\"\\'> ]+" --exclude-dir=.git*
+
+curllinks:
+	@$(CURMAKE) greplinks | xargs -I{} -r -P10 \
+		curl -I -o/dev/null -sw "[%{http_code}] %{url}\n" '{}'
 
 deadlinks:
-	@echo "=======> Check for dead links"
-	@grep -EIihor "https?://[^\"\\'> ]+" --exclude-dir=.git*  \
-		| xargs -P10 -r -I{} curl -I -o/dev/null          \
-		  -sw "[%{http_code}] %{url}\n" '{}'              \
-		| grep -v '^\[200\]'                              \
-		| sort -u
+	@$(CURMAKE) curllinks | grep -v '^\[200\]' | sort -u
 
 podchecker:
 	@echo "=======> Check PODs for syntax errors"
@@ -33,4 +38,7 @@ longlines:
 	@echo "=======> Check for long lines"
 	@! grep -PIrn '^.{81,}$$' --exclude-dir=.git*
 
-.PHONY: all deadlinks podchecker shellcheck cppcheck flawfinder longlines
+.PHONY: all greplinks curllinks deadlinks \
+	podchecker shellcheck cppcheck flawfinder longlines
+
+# End of file.
