@@ -10,6 +10,7 @@ SSD from dpkg distribution with adjustments for CRUX.
 This SSD have the following little differences:
 - CRUX' patch by default
 - no systemd-related code
+- `-e, --env` option to set/remove environment variables
 - suckless style build
 - various fixes and cleanups
 
