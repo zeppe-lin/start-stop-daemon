@@ -305,32 +305,32 @@ Print verbose informational messages.
 
 =head1 EXAMPLES
 
-Start the B<food> daemon, unless one is already running (a process
-named food, running as user food, with pid in food.pid):
+Start the B<foo> daemon, unless one is already running (a process
+named C<foo>, running as user C<foo>, with pid in F<foo.pid>):
 
 =over
 
- start-stop-daemon --start --oknodo --user food --name food \
-         --pidfile /run/food.pid --startas /usr/sbin/food \
-         --chuid food -- --daemon
+ start-stop-daemon --start --oknodo --user foo --name foo \
+         --pidfile /run/foo.pid --startas /usr/sbin/foo \
+         --chuid foo -- --daemon
 
 =back
 
-Send B<SIGTERM> to B<food> and wait up to 5 seconds for it to stop:
+Send B<SIGTERM> to B<foo> and wait up to 5 seconds for it to stop:
 
 =over
 
- start-stop-daemon --stop --oknodo --user food --name food \
-         --pidfile /run/food.pid --retry 5
+ start-stop-daemon --stop --oknodo --user foo --name foo \
+         --pidfile /run/foo.pid --retry 5
 
 =back
 
-Demonstration of a custom schedule for stopping B<food>:
+Demonstration of a custom schedule for stopping B<foo>:
 
 =over
 
- start-stop-daemon --stop --oknodo --user food --name food \
-         --pidfile /run/food.pid --retry=TERM/30/KILL/5
+ start-stop-daemon --stop --oknodo --user foo --name foo \
+         --pidfile /run/foo.pid --retry=TERM/30/KILL/5
 
 =back
 
