@@ -220,10 +220,11 @@ process group membership for generic users like B<nobody>).
 
 Set the environment variable I<var> to I<value>.
 
-B<Warning:> Conform L<putenv(2)>, the GNU C library implementation
-provides a nonstandard extension.  If string argument does not include
-an equal sign (e.g., C<--env VAR>) then the named variable is removed
-from the caller's environment.
+B<Warning:> The GNU C library implementation provides a nonstandard
+extension.  If B<-e>|B<--env> argument does not include an equal sign
+(e.g., C<--env VAR>) then the named variable is removed from the
+caller's environment.  See L<putenv(2)> for implementation details in
+your C standard library.
 
 =item B<-r>, B<--chroot> I<root>
 
