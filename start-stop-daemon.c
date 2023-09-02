@@ -20,7 +20,12 @@
  *    * ported to OpenBSD
  *
  * Changes by Ian Jackson:
- *    * added --retry (and associated rearrangements).
+ *    * added --retry option (and associated rearrangements).
+ *
+ * Changes by Alexandr Savca:
+ *    * added --env option.
+ *
+ * See COPYRIGHT file for complete copyright notices.
  */
 
 # define HAVE_SYS_PARAM_H
