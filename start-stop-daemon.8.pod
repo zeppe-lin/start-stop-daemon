@@ -216,6 +216,15 @@ option is not specified.  The B<-g>|B<--group> option is only for
 groups that the user isn't normally a member of (like adding per
 process group membership for generic users like B<nobody>).
 
+=item B<-e>, B<--env> I<var>[=I<value>]
+
+Set the environment variable I<var> to I<value>.
+
+B<Warning:> Conform L<putenv(2)>, the GNU C library implementation
+provides a nonstandard extension.  If string argument does not include
+an equal sign (e.g., C<--env VAR>) then the named variable is removed
+from the caller's environment.
+
 =item B<-r>, B<--chroot> I<root>
 
 Change directory and chroot to I<root> before starting the process.

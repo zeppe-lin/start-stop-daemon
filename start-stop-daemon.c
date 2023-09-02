@@ -718,6 +718,12 @@ usage(void)
 "  -c, --chuid <name|uid[:group|gid]>\n"
 "                                change to this user/group before starting\n"
 "                                  process\n"
+#ifdef __GLIBC__
+"  -e, --env <var[=value]>       set the environment variable var to value\n"
+"                                  or remove the named variable\n"
+#else
+"  -e, --env <var=value>         set the environment variable var to value\n"
+#endif
 "  -s, --signal <signal>         signal to send (default TERM)\n"
 "  -a, --startas <pathname>      program to start (default is <executable>)\n"
 "  -r, --chroot <directory>      chroot to <directory> before starting\n"
@@ -1103,6 +1109,7 @@ parse_options(int argc, char * const *argv)
 		{ "verbose",		0, NULL, 'v'},
 		{ "exec",		1, NULL, 'x'},
 		{ "chuid",		1, NULL, 'c'},
+		{ "env",		1, NULL, 'e'},
 		{ "nicelevel",		1, NULL, 'N'},
 		{ "procsched",		1, NULL, 'P'},
 		{ "iosched",		1, NULL, 'I'},
@@ -1128,7 +1135,7 @@ parse_options(int argc, char * const *argv)
 
 	for (;;) {
 		c = getopt_long(argc, argv,
-		                "HKSVTa:n:op:qr:s:tu:vx:c:N:P:I:k:bCO:mR:g:d:",
+		                "HKSVTa:n:op:qr:s:tu:vx:c:e:N:P:I:k:bCO:mR:g:d:",
 		                longopts, NULL);
 		if (c == -1)
 			break;
@@ -1201,6 +1208,9 @@ parse_options(int argc, char * const *argv)
 					fatal("missing group name");
 				changegroup = optarg + changeuser_len + 1;
 			}
+			break;
+		case 'e':  /* --env var[=value] */
+			putenv(optarg);
 			break;
 		case 'g':  /* --group <group>|<gid> */
 			changegroup = optarg;
