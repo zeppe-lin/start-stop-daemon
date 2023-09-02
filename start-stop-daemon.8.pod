@@ -37,15 +37,16 @@ of system-level processes.  Using one of the matching options,
 B<start-stop-daemon> can be configured to find existing instances of a
 running process.
 
-B<Note:> Unless B<--pid> or B<--pidfile> are specified,
+B<Note:> Unless B<--pid> or B<-p>|B<--pidfile> are specified,
 B<start-stop-daemon> behaves similar to L<killall(1)>.
 B<start-stop-daemon> will scan the process table looking for any
 processes which match the process name, parent pid, uid, and/or gid
-(if specified).  Any matching process will prevent B<--start> from
-starting the daemon.  All matching processes will be sent the TERM
-signal (or the one specified via B<--signal> or B<--retry>) if
-B<--stop> is specified.  For daemons which have long-lived children
-which need to live through a B<--stop>, you must specify a pidfile.
+(if specified).  Any matching process will prevent B<-S>|B<--start>
+from starting the daemon.  All matching processes will be sent the
+TERM signal (or the one specified via B<-s>|B<--signal> or
+B<-R>|B<--retry>) if B<-K>|B<--stop> is specified.  For daemons which
+have long-lived children which need to live through a B<-K>|B<--stop>,
+you must specify a pidfile.
 
 =head1 COMMANDS
 
@@ -55,20 +56,21 @@ which need to live through a B<--stop>, you must specify a pidfile.
 
 Check for the existence of a specified process.  If such a process
 exists, B<start-stop-daemon> does nothing, and exits with error status
-1 (0 if B<--oknodo> is specified).  If such a process does not exist,
-it starts an instance, using either the executable specified by
-B<--exec> or, if specified, by B<--startas>.  Any arguments given
-after B<--> on the command line are passed unmodified to the program
-being started.
+1 (0 if B<-o>|B<--oknodo> is specified).  If such a process does not
+exist, it starts an instance, using either the executable specified by
+B<-x>|B<--exec> or, if specified, by B<-a>|B<--startas>.  Any
+arguments given after B<--> on the command line are passed unmodified
+to the program being started.
 
 =item B<-K>, B<--stop>
 
 Checks for the existence of a specified process.  If such a process
 exists, B<start-stop-daemon> sends it the signal specified by
-B<--signal>, and exits with error status 0.  If such a process does
-not exist, B<start-stop-daemon> exits with error status 1 (0 if
-B<--oknodo> is specified).  If B<--retry> is specified, then
-B<start-stop-daemon> will check that the process(es) have terminated.
+B<-s>|B<--signal>, and exits with error status 0.  If such a process
+does not exist, B<start-stop-daemon> exits with error status 1 (0 if
+B<-o>|B<--oknodo> is specified).  If B<-R>|B<--retry> is specified,
+then B<start-stop-daemon> will check that the process(es) have
+terminated.
 
 =item B<-T>, B<--status>
 
@@ -159,12 +161,12 @@ Change to I<group> or I<gid> when starting the process.
 
 =item B<-s>, B<--signal> I<signal>
 
-With B<--stop>, specifies the signal to send to processes being
+With B<-K>|B<--stop>, specifies the signal to send to processes being
 stopped (default TERM).
 
 =item B<-R>, B<--retry> I<timeout>|I<schedule>
 
-With B<--stop>, specifies that B<start-stop-daemon> is to check
+With B<-K>|B<--stop>, specifies that B<start-stop-daemon> is to check
 whether the process(es) do finish.  It will check repeatedly whether
 any matching processes are running, until none are.  If the processes
 do not exit it will then take further action as determined by the
@@ -172,7 +174,7 @@ schedule.
 
 If I<timeout> is specified instead of I<schedule>, then the schedule
 I<signal>B</>I<timeout>B</KILL/>I<timeout> is used, where I<signal> is
-the signal specified with B<--signal>.
+the signal specified with B<-s>|B<--signal>.
 
 I<schedule> is a list of at least two items separated by slashes
 (B</>); each item may be B<->I<signal-number> or [B<->]I<signal-name>,
@@ -182,12 +184,13 @@ repeat the rest of the schedule forever if necessary.
 
 If the end of the schedule is reached and B<forever> is not specified,
 then B<start-stop-daemon> exits with error status 2.  If a schedule is
-specified, then any signal specified with B<--signal> is ignored.
+specified, then any signal specified with B<-s>|B<--signal> is
+ignored.
 
 =item B<-a>, B<--startas> I<pathname>
 
-With B<--start>, start the process specified by I<pathname>.  If not
-specified, defaults to the argument given to B<--exec>.
+With B<-S>|B<--start>, start the process specified by I<pathname>.  If
+not specified, defaults to the argument given to B<-x>|B<--exec>.
 
 =item B<-t>, B<--test>
 
@@ -209,10 +212,10 @@ specify a group by appending a B<:>, then the group or gid in the same
 way as you would for the L<chown(1)> command (I<user>B<:>I<group>).
 If a user is specified without a group, the primary GID for that user
 is used.  When using this option you must realize that the primary and
-supplemental groups are set as well, even if the B<--group> option is
-not specified.  The B<--group> option is only for groups that the user
-isn't normally a member of (like adding per process group membership
-for generic users like B<nobody>).
+supplemental groups are set as well, even if the B<-g>|B<--group>
+option is not specified.  The B<-g>|B<--group> option is only for
+groups that the user isn't normally a member of (like adding per
+process group membership for generic users like B<nobody>).
 
 =item B<-r>, B<--chroot> I<root>
 
@@ -243,13 +246,13 @@ this themselves.
 Do not close any file descriptor when forcing the daemon into the
 background (since version 1.16.5).  Used for debugging purposes to see
 the process output, or to redirect file descriptors to log the process
-output.  Only relevant when using B<--background>.
+output.  Only relevant when using B<-b>|B<--background>.
 
 =item B<-O>, B<--output> I<pathname>
 
 Redirect B<stdout> and B<stderr> to I<pathname> when forcing the
 daemon into the background (since version 1.20.6).  Only relevant when
-using B<--background>.
+using B<-b>|B<--background>.
 
 =item B<-N>, B<--nicelevel> I<int>
 
@@ -281,21 +284,21 @@ This sets the umask of the process before starting it (since version
 
 Used when starting a program that does not create its own pid file.
 This option will make B<start-stop-daemon> create the file referenced
-with B<--pidfile> and place the pid into it just before executing the
-process.  Note, the file will only be removed when stopping the
-program if B<--remove-pidfile> is used.
+with B<-p>|B<--pidfile> and place the pid into it just before
+executing the process.  Note, the file will only be removed when
+stopping the program if B<--remove-pidfile> is used.
 
 B<Note:> This feature may not work in all cases.  Most notably when
 the program being executed forks from its main process.  Because of
-this, it is usually only useful when combined with the B<--background>
-option.
+this, it is usually only useful when combined with the
+B<-b>|B<--background> option.
 
 =item B<--remove-pidfile>
 
 Used when stopping a program that does not remove its own pid file
 (since version 1.17.19).  This option will make B<start-stop-daemon>
-remove the file referenced with B<--pidfile> after terminating the
-process.
+remove the file referenced with B<-p>|B<--pidfile> after terminating
+the process.
 
 =item B<-v>, B<--verbose>
 
@@ -340,19 +343,20 @@ Demonstration of a custom schedule for stopping B<foo>:
 
 =item B<0>
 
-The requested action was performed.  If B<--oknodo> was specified,
-it's also possible that nothing had to be done.  This can happen when
-B<--start> was specified and a matching process was already running,
-or when B<--stop> was specified and there were no matching processes.
+The requested action was performed.  If B<-o>|B<--oknodo> was
+specified, it's also possible that nothing had to be done.  This can
+happen when B<-S>|B<--start> was specified and a matching process was
+already running, or when B<-K>|B<--stop> was specified and there were
+no matching processes.
 
 =item B<1>
 
-If B<--oknodo> was not specified and nothing was done.
+If B<-o>|B<--oknodo> was not specified and nothing was done.
 
 =item B<2>
 
-If B<--stop> and B<--retry> were specified, but the end of the
-schedule was reached and the processes were still running.
+If B<-K>|B<--stop> and B<-R>|B<--retry> were specified, but the end of
+the schedule was reached and the processes were still running.
 
 =item B<3>
 
@@ -360,8 +364,8 @@ Any other error.
 
 =back
 
-When using the B<--status> command, the following status codes are
-returned:
+When using the B<-T>|B<--status> command, the following status codes
+are returned:
 
 =over
 
