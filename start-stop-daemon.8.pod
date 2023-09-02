@@ -50,7 +50,7 @@ you must specify a pidfile.
 
 =head1 COMMANDS
 
-=over
+=over 8
 
 =item B<-S>, B<--start> [B<-->] I<arguments>
 
@@ -91,7 +91,7 @@ Show the program version and exit.
 
 =head2 Matching options
 
-=over
+=over 8
 
 =item B<--pid> I<pid>
 
@@ -152,7 +152,7 @@ matching the user to be acted on.
 
 =head2 Generic options
 
-=over
+=over 8
 
 =item B<-g>, B<--group> I<group>|I<gid>
 
@@ -304,7 +304,7 @@ Print verbose informational messages.
 
 =head1 EXIT STATUS
 
-=over
+=over 8
 
 =item B<0>
 
@@ -332,7 +332,7 @@ Any other error.
 When using the B<-T>|B<--status> command, the following status codes
 are returned:
 
-=over
+=over 8
 
 =item B<0>
 
