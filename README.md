@@ -17,9 +17,11 @@ This SSD have the following little differences:
 See git log for complete/further differences.
 
 The original sources can be downloaded from:
-1. git://crux.nu/tools/start-stop-daemon.git              (git)
-2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git  (web)
-
+- CRUX:
+  1. git://crux.nu/tools/start-stop-daemon.git              (git)
+  2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git  (web)
+- Debian:
+  1. https://git.dpkg.org/git/dpkg/dpkg.git                 (git)
 
 REQUIREMENTS
 ------------
