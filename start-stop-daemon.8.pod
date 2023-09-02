@@ -168,7 +168,7 @@ With B<--stop>, specifies that B<start-stop-daemon> is to check
 whether the process(es) do finish.  It will check repeatedly whether
 any matching processes are running, until none are.  If the processes
 do not exit it will then take further action as determined by the
-  schedule.
+schedule.
 
 If I<timeout> is specified instead of I<schedule>, then the schedule
 I<signal>B</>I<timeout>B</KILL/>I<timeout> is used, where I<signal> is
