@@ -1,4 +1,4 @@
-# dpkg manual page - start-stop-daemon(8)
+# start-stop-daemon(8) manual page
 #
 # Copyright © 1999 Klee Dienes <klee@mit.edu>
 # Copyright © 1999 Ben Collins <bcollins@debian.org>
