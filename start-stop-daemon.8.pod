@@ -59,8 +59,8 @@ exists, B<start-stop-daemon> does nothing, and exits with error status
 1 (0 if B<-o>|B<--oknodo> is specified).  If such a process does not
 exist, it starts an instance, using either the executable specified by
 B<-x>|B<--exec> or, if specified, by B<-a>|B<--startas>.  Any
-arguments given after B<--> on the command line are passed unmodified
-to the program being started.
+I<arguments> given after B<--> on the command line are passed
+unmodified to the program being started.
 
 =item B<-K>, B<--stop>
 
