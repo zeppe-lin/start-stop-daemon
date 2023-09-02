@@ -1,26 +1,5 @@
 # start-stop-daemon(8) manual page
-#
-# Copyright (C) 1999      Klee Dienes          <klee@mit.edu>
-# Copyright (C) 1999      Ben Collins          <bcollins@debian.org>
-# Copyright (C) 1999-2002 Wichert Akkerman     <wakkerma@debian.org>
-# Copyright (C) 2000-2003 Adam Heath           <doogie@debian.org>
-# Copyright (C) 2004-2005 Scott James Remnant  <keybuk@debian.org>,
-#                                              <scott@netsplit.com>
-# Copyright (C) 2006-2023 Guillem Jover        <guillem@debian.org>
-# Copyright (C) 2007      Nicolas Francois     <nekral-guest@users.alioth.debian.org>
-# Copyright (C) 2008      Andreas Påhlsson     <andreas.pahlsson@xcerion.com>
-# Copyright (C) 2008      Erast Benson         <erast@gnusolaris.org>
-# Copyright (C) 2008      Justin Pryzby        <jpryzby+d@quoininc.com>
-# Copyright (C) 2008      Samuel Thibault      <samuel.thibault@ens-lyon.org>
-# Copyright (C) 2009      Chris Coulson        <chrisccoulson@googlemail.com>
-# Copyright (C) 2009      Raphael Hertzog      <hertzog@debian.org>
-# Copyright (C) 2012      Carsten Hey          <carsten@debian.org>
-# Copyright (C) 2014      Christos Trochalakis <yatiohi@ideopolis.gr>
-# Copyright (C) 2015      Sven Joachim         <svenjoac@gmx.de>
-# Copyright (C) 2017      Fredrik Rinnestam    <fredrik@crux.nu>
-# Copyright (C) 2018      Trek                 <trek00@inbox.ru>
-# Copyright (C) 2018-2021 Steffen Nurpmeso     <steffen@sdaoden.eu>
-# Copyright (C) 2022-2023 Alexandr Savca       <alexandr.savca89@gmail.com>
+# See COPYRIGHT file for copyright notices.
 #
 # This is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
