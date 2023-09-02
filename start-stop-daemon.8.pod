@@ -75,8 +75,7 @@ terminated.
 =item B<-T>, B<--status>
 
 Check for the existence of a specified process, and returns an exit
-status code, according to the LSB Init Script Actions (since version
-1.16.1).
+status code, according to the LSB Init Script Actions.
 
 =item B<-H>, B<--help>
 
@@ -96,13 +95,13 @@ Show the program version and exit.
 
 =item B<--pid> I<pid>
 
-Check for a process with the specified I<pid> (since version 1.17.6).
-The I<pid> must be a number greater than 0.
+Check for a process with the specified I<pid>.  The I<pid> must be a
+number greater than 0.
 
 =item B<--ppid> I<ppid>
 
-Check for a process with the specified parent pid I<ppid> (since
-version 1.17.7).  The I<ppid> must be a number greater than 0.
+Check for a process with the specified parent pid I<ppid>.  The
+I<ppid> must be a number greater than 0.
 
 =item B<-p>, B<--pidfile> I<pidfile>
 
@@ -114,12 +113,12 @@ able to remove the I<pidfile>.
 
 B<Warning:> Using this match option with a world-writable pidfile or
 using it alone with a daemon that writes the pidfile as an
-unprivileged (non-root) user will be refused with an error (since
-version 1.19.3) as this is a security risk, because either any user
-can write to it, or if the daemon gets compromised, the contents of
-the pidfile cannot be trusted, and then a privileged runner (such as
-an init script executed as root) would end up acting on any system
-process.  Using I</dev/null> is exempt from these checks.
+unprivileged (non-root) user will be refused with an error as this is
+a security risk, because either any user can write to it, or if the
+daemon gets compromised, the contents of the pidfile cannot be
+trusted, and then a privileged runner (such as an init script executed
+as root) would end up acting on any system process.  Using
+I</dev/null> is exempt from these checks.
 
 =item B<-x>, B<--exec> I<executable>
 
@@ -244,15 +243,15 @@ this themselves.
 =item B<-C>, B<--no-close>
 
 Do not close any file descriptor when forcing the daemon into the
-background (since version 1.16.5).  Used for debugging purposes to see
-the process output, or to redirect file descriptors to log the process
-output.  Only relevant when using B<-b>|B<--background>.
+background.  Used for debugging purposes to see the process output, or
+to redirect file descriptors to log the process output.  Only relevant
+when using B<-b>|B<--background>.
 
 =item B<-O>, B<--output> I<pathname>
 
 Redirect B<stdout> and B<stderr> to I<pathname> when forcing the
-daemon into the background (since version 1.20.6).  Only relevant when
-using B<-b>|B<--background>.
+daemon into the background.  Only relevant when using
+B<-b>|B<--background>.
 
 =item B<-N>, B<--nicelevel> I<int>
 
@@ -261,24 +260,22 @@ This alters the priority of the process before starting it.
 =item B<-P>, B<--procsched> I<policy>B<:>I<priority>
 
 This alters the process scheduler policy and priority of the process
-before starting it (since version 1.15.0).  The priority can be
-optionally specified by appending a B<:> followed by the value.  The
-default I<priority> is 0.  The currently supported policy values are
-B<other>, B<fifo> and B<rr>.
+before starting it.  The priority can be optionally specified by
+appending a B<:> followed by the value.  The default I<priority> is 0.
+The currently supported policy values are B<other>, B<fifo> and B<rr>.
 
 =item B<-I>, B<--iosched> I<class>B<:>I<priority>
 
 This alters the IO scheduler class and priority of the process before
-starting it (since version 1.15.0).  The priority can be optionally
-specified by appending a B<:> followed by the value.  The default
-I<priority> is 4, unless I<class> is B<idle>, then I<priority> will
-always be 7.  The currently supported values for I<class> are B<idle>,
-B<best-effort> and B<real-time>.
+starting it.  The priority can be optionally specified by appending a
+B<:> followed by the value.  The default I<priority> is 4, unless
+I<class> is B<idle>, then I<priority> will always be 7.  The currently
+supported values for I<class> are B<idle>, B<best-effort> and
+B<real-time>.
 
 =item B<-k>, B<--umask> I<mask>
 
-This sets the umask of the process before starting it (since version
-1.13.22).
+This sets the umask of the process before starting it.
 
 =item B<-m>, B<--make-pidfile>
 
@@ -295,10 +292,9 @@ B<-b>|B<--background> option.
 
 =item B<--remove-pidfile>
 
-Used when stopping a program that does not remove its own pid file
-(since version 1.17.19).  This option will make B<start-stop-daemon>
-remove the file referenced with B<-p>|B<--pidfile> after terminating
-the process.
+Used when stopping a program that does not remove its own pid file.
+This option will make B<start-stop-daemon> remove the file referenced
+with B<-p>|B<--pidfile> after terminating the process.
 
 =item B<-v>, B<--verbose>
 
