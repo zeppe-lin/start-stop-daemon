@@ -15,8 +15,9 @@
  *    * added --chuid, --background and --make-pidfile options,
  *    * placed in public domain as well.
  *
- * Port to OpenBSD by Sontri Tomo Huynh <huynh.29@osu.edu>
- *                 and Andreas Schuldei <andreas@schuldei.org>
+ * Changes by Sontri Tomo Huynh <huynh.29@osu.edu>
+ *        and Andreas Schuldei <andreas@schuldei.org>:
+ *    * ported to OpenBSD
  *
  * Changes by Ian Jackson:
  *    * added --retry (and associated rearrangements).
