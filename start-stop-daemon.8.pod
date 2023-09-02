@@ -302,35 +302,6 @@ Print verbose informational messages.
 
 =back
 
-=head1 EXAMPLES
-
-=over
-
-=item *
-
-Start the B<foo> daemon, unless one is already running (a process
-named C<foo>, running as user C<foo>, with pid in F<foo.pid>):
-
-        start-stop-daemon --start --oknodo --user foo --name foo \
-                --pidfile /run/foo.pid --startas /usr/sbin/foo \
-                --chuid foo -- --daemon
-
-=item *
-
-Send B<SIGTERM> to B<foo> and wait up to 5 seconds for it to stop:
-
-        start-stop-daemon --stop --oknodo --user foo --name foo \
-                --pidfile /run/foo.pid --retry 5
-
-=item *
-
-Demonstration of a custom schedule for stopping B<foo>:
-
-        start-stop-daemon --stop --oknodo --user foo --name foo \
-                --pidfile /run/foo.pid --retry=TERM/30/KILL/5
-
-=back
-
 =head1 EXIT STATUS
 
 =over
@@ -378,6 +349,35 @@ Program is not running.
 =item B<4>
 
 Unable to determine program status.
+
+=back
+
+=head1 EXAMPLES
+
+=over
+
+=item *
+
+Start the B<foo> daemon, unless one is already running (a process
+named C<foo>, running as user C<foo>, with pid in F<foo.pid>):
+
+        start-stop-daemon --start --oknodo --user foo --name foo \
+                --pidfile /run/foo.pid --startas /usr/sbin/foo \
+                --chuid foo -- --daemon
+
+=item *
+
+Send B<SIGTERM> to B<foo> and wait up to 5 seconds for it to stop:
+
+        start-stop-daemon --stop --oknodo --user foo --name foo \
+                --pidfile /run/foo.pid --retry 5
+
+=item *
+
+Demonstration of a custom schedule for stopping B<foo>:
+
+        start-stop-daemon --stop --oknodo --user foo --name foo \
+                --pidfile /run/foo.pid --retry=TERM/30/KILL/5
 
 =back
 
