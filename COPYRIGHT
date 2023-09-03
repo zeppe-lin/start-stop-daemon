@@ -2,7 +2,8 @@ Copyright (C) 1999      Klee Dienes          <klee@mit.edu>
 Copyright (C) 1999      Ben Collins          <bcollins@debian.org>
 Copyright (C) 1999-2002 Wichert Akkerman     <wakkerma@debian.org>
 Copyright (C) 2000-2003 Adam Heath           <doogie@debian.org>
-Copyright (C) 2004-2005 Scott James Remnant  <keybuk@debian.org>, <scott@netsplit.com>
+Copyright (C) 2004-2005 Scott James Remnant  <keybuk@debian.org>,
+                                             <scott@netsplit.com>
 Copyright (C) 2006-2023 Guillem Jover        <guillem@debian.org>
 Copyright (C) 2007      Nicolas Francois     <nekral-guest@users.alioth.debian.org>
 Copyright (C) 2008      Andreas Påhlsson     <andreas.pahlsson@xcerion.com>
