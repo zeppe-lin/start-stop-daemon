@@ -2,17 +2,14 @@
 
 include config.mk
 
-all: start-stop-daemon start-stop-daemon.8
-
-start-stop-daemon.8:
-	pod2man -r "${NAME} ${VERSION}" -c ' ' -n start-stop-daemon \
-		-s 8 start-stop-daemon.8.pod > $@
+all: start-stop-daemon
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
 	mkdir -p ${DESTDIR}${MANPREFIX}/man8
 	cp -f start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
-	cp -f start-stop-daemon.8 ${DESTDIR}${MANPREFIX}/man8/
+	sed "s/@VERSION@/${VERSION}/" start-stop-daemon.8 > \
+		${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 	chmod 0755 ${DESTDIR}${PREFIX}/sbin/start-stop-daemon
 	chmod 0644 ${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 
@@ -21,7 +18,7 @@ uninstall:
 	rm -f ${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 
 clean:
-	rm -f start-stop-daemon start-stop-daemon.o start-stop-daemon.8
+	rm -f start-stop-daemon
 	rm -f ${DIST}.tar.gz
 
 dist: clean
