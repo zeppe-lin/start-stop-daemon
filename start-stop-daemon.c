@@ -694,13 +694,14 @@ static void
 usage(void)
 {
 	printf(
-"Usage: start-stop-daemon [<option>...] <command>\n"
+"Usage: start-stop-daemon [option ...] command\n"
 "Start and stop system daemon programs.\n"
-"\n");
+"\n"
+"Mandatory arguments to long options are mandatory for short options too.\n");
 
 	printf(
 "Commands:\n"
-"  -S, --start -- <argument>...  start a program and pass <arguments> to it\n"
+"  -S, --start [-- args ...]     start a program and pass arg(s) to it\n"
 "  -K, --stop                    stop a program\n"
 "  -T, --status                  get the program status\n"
 "  -H, --help                    print help information\n"
@@ -709,43 +710,42 @@ usage(void)
 
 	printf(
 "Matching options (at least one is required):\n"
-"      --pid <pid>               pid to check\n"
-"      --ppid <ppid>             parent pid to check\n"
-"  -p, --pidfile <pid-file>      pid file to check\n"
-"  -x, --exec <executable>       program to start/check if it is running\n"
-"  -n, --name <process-name>     process name to check\n"
-"  -u, --user <username|uid>     process owner to check\n"
+"      --pid=pid                 pid to check\n"
+"      --ppid=ppid               parent pid to check\n"
+"  -p, --pidfile=pid-file        pid file to check\n"
+"  -x, --exec=executable         program to start/check if it is running\n"
+"  -n, --name=process-name       process name to check\n"
+"  -u, --user=username|uid       process owner to check\n"
 "\n");
 
 	printf(
 "Options:\n"
-"  -g, --group <group|gid>       run process as this group\n"
-"  -c, --chuid <name|uid[:group|gid]>\n"
+"  -g, --group=group|gid         run process as this group\n"
+"  -c, --chuid=name|uid[:group|gid]\n"
 "                                change to this user/group before starting\n"
 "                                  process\n"
 #ifdef __GLIBC__
-"  -e, --env <var[=value]>       set the environment variable var to value\n"
+"  -e, --env=var[=value]         set the environment variable var to value\n"
 "                                  or remove the named variable\n"
 #else
-"  -e, --env <var=value>         set the environment variable var to value\n"
+"  -e, --env=var=value           set the environment variable var to value\n"
 #endif
-"  -s, --signal <signal>         signal to send (default TERM)\n"
-"  -a, --startas <pathname>      program to start (default is <executable>)\n"
-"  -r, --chroot <directory>      chroot to <directory> before starting\n"
-"  -d, --chdir <directory>       change to <directory> (default is /)\n"
-"  -N, --nicelevel <incr>        add incr to the process' nice level\n"
-"  -P, --procsched <policy[:prio]>\n"
-"                                use <policy> with <prio> for the kernel\n"
+"  -s, --signal=signal           signal to send (default TERM)\n"
+"  -a, --startas=pathname        program to start (default is <executable>)\n"
+"  -r, --chroot=directory        chroot to <directory> before starting\n"
+"  -d, --chdir=directory         change to <directory> (default is /)\n"
+"  -N, --nicelevel=incr          add incr to the process' nice level\n"
+"  -P, --procsched=policy[:prio] use <policy> with <prio> for the kernel\n"
 "                                  process scheduler (default prio is 0)\n"
-"  -I, --iosched <class[:prio]>  use <class> with <prio> to set the IO\n"
+"  -I, --iosched=class[:prio]    use <class> with <prio> to set the IO\n"
 "                                  scheduler (default prio is 4)\n"
-"  -k, --umask <mask>            change the umask to <mask> before starting\n"
+"  -k, --umask=mask              change the umask to <mask> before starting\n"
 "  -b, --background              force the process to detach\n"
 "  -C, --no-close                do not close any file descriptor\n"
-"  -O, --output <filename>       send stdout and stderr to <filename>\n"
+"  -O, --output=filename         send stdout and stderr to <filename>\n"
 "  -m, --make-pidfile            create the pidfile before starting\n"
 "      --remove-pidfile          delete the pidfile after stopping\n"
-"  -R, --retry <schedule>        check whether processes die, and retry\n"
+"  -R, --retry=schedule          check whether processes die, and retry\n"
 "  -t, --test                    test mode, don't do anything\n"
 "  -o, --oknodo                  exit status 0 (not 1) if nothing done\n"
 "  -q, --quiet                   be more quiet\n"
