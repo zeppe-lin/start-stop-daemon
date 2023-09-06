@@ -1,5 +1,6 @@
 .\" start-stop-daemon(8) manual page
 .\" See COPYRIGHT file for copyright notices.
+.\"
 .\" This is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
 .\" the Free Software Foundation; either version 2 of the License, or
@@ -12,6 +13,7 @@
 .\"
 .\" You should have received a copy of the GNU General Public License
 .\" along with this program.  If not, see <https://www.gnu.org/licenses/>.
+.\"
 .Dd September 6, 2023
 .Dt START-STOP-DAEMON 8
 .Os
@@ -113,19 +115,19 @@ Show the program version and exit.
 .Sh OPTIONS
 .Ss Matching options
 .Bl -tag -width Ds
-.It Fl \-pid Ar pid
+.It Fl \-pid Ns = Ns Ar pid
 Check for a process with the specified
 .Ar pid .
 The
 .Ar pid
 must be a number greater than 0.
-.It Fl \-ppid Ar ppid
+.It Fl \-ppid Ns = Ns Ar ppid
 Check for a process with the specified parent pid
 .Ar ppid .
 The
 .Ar ppid
 must be a number greater than 0.
-.It Fl p , Fl \-pidfile Ar pidfile
+.It Fl p Ar pidfile , Fl \-pidfile Ns = Ns Ar pidfile
 Check whether a process has created the file
 .Ar pidfile .
 .Pp
@@ -146,7 +148,7 @@ up acting on any system process.
 Using
 .Pa /dev/null
 is exempt from these checks.
-.It Fl x , Fl \-exec Ar executable
+.It Fl x Ar executable , Fl \-exec Ns = Ns Ar executable
 Check for processes that are instances of this
 .Ar executable .
 The
@@ -158,7 +160,7 @@ This might not work as intended with interpreted scripts, as the
 executable will point to the interpreter.
 Take into account processes running from inside a chroot will also be
 matched, so other match restrictions might be needed.
-.It Fl n , Fl \-name Ar process-name
+.It Fl n Ar process-name , Fl \-name Ns = Ns Ar process-name
 Check for processes with the name
 .Ar process-name .
 The
@@ -170,7 +172,7 @@ process itself.
 On most systems this information is retrieved from the process comm
 name from the kernel, which tends to have a relatively short length
 limit (assuming more than 15 characters is non-portable).
-.It Fl u , Fl \-user Ar username Ns | Ns Ar uid
+.It Fl u Ar username Ns | Ns Ar uid , Fl \-user Ns = Ns Ar username Ns | Ns Ar uid
 Check for processes owned by the user specified by
 .Ar username
 or
@@ -182,18 +184,18 @@ user to be acted on.
 .El
 .Ss Generic options
 .Bl -tag -width Ds
-.It Fl g , Fl \-group Ar group Ns | Ns Ar gid
+.It Fl g Ar group Ns | Ns Ar gid , Fl \-group Ns = Ns Ar group Ns | Ns Ar gid
 Change to
 .Ar group
 or
 .Ar gid
 when starting the process.
-.It Fl s , Fl \-signal Ar signal
+.It Fl s Ar signal , Fl \-signal Ns = Ns Ar signal
 With
 .Fl K Ns / Ns Fl \-stop ,
 specifies the signal to send to processes being stopped
 .Pq default TERM .
-.It Fl R , Fl \-retry Ar timeout Ns | Ns Ar schedule
+.It Fl R Ar timeout Ns | Ns Ar schedule , Fl \-retry Ns = Ns Ar timeout Ns | Ns Ar schedule
 With
 .Fl K Ns / Ns Fl \-stop ,
 specifies that
@@ -236,7 +238,7 @@ exits with error status 2.
 If a schedule is specified, then any signal specified with
 .Fl s Ns / Ns Fl \-signal
 is ignored.
-.It Fl a , Fl \-startas Ar pathname
+.It Fl a Ar pathname , Fl \-startas Ns = Ns Ar pathname
 With
 .Fl S Ns / Ns Fl \-start ,
 start the process specified by
@@ -250,7 +252,7 @@ but take no action.
 Return exit status 0 instead of 1 if no actions are (would be) taken.
 .It Fl q , Fl \-quiet
 Do not print informational messages; only display error messages.
-.It Fl c , Fl \-chuid Ar username Ns | Ns Ar uid Ns [ : Ns Ar group Ns | Ns Ar gid ]
+.It Fl c Ar username Ns | Ns Ar uid Ns [ : Ns Ar group Ns | Ns Ar gid ] , Fl \-chuid Ns = Ns Ar username Ns | Ns Ar uid Ns [ : Ns Ar group Ns | Ns Ar gid ]
 Change to this username/uid before starting the process.
 You can also specify a group by appending a semicolon
 .Ql \&: ,
@@ -271,7 +273,7 @@ option is only for groups that the user isn't normally a member of
 like adding per process group membership for generic users like
 .Sy nobody Ns
 .Pc .
-.It Fl e , Fl \-env Ar var Ns [= Ns Ar value ]
+.It Fl e Ar var Ns [= Ns Ar value ] , Fl \-env Ns = Ns Ar var Ns [= Ns Ar value ]
 Set the environment variable
 .Ar var
 to
@@ -284,18 +286,18 @@ If
 argument does not include an equal sign
 .Po
 e.g.,
-.Qo Li --env VAR Qc
+.Dq --env VAR
 .Pc
 then the named variable is removed from the caller's environment.
 See
 .Xr putenv 3
 for implementation details in your C standard library.
-.It Fl r , Fl \-chroot Ar root
+.It Fl r Ar root , Fl \-chroot Ns = Ns Ar root
 Change directory and chroot to
 .Ar root
 before starting the process.
 Please note that the pidfile is also written after the chroot.
-.It Fl d , Fl \-chdir Ar path
+.It Fl d Ar path , Fl \-chdir Ns = Ns Ar path
 Change directory to
 .Ar path
 before starting the process.
@@ -327,7 +329,7 @@ Used for debugging purposes to see the process output, or to redirect
 file descriptors to log the process output.
 Only relevant when using
 .Fl b Ns / Ns Fl \-background .
-.It Fl O , Fl \-output Ar pathname
+.It Fl O Ar pathname , Fl \-output Ns = Ns Ar pathname
 Redirect
 .Sy stdout
 and
@@ -337,9 +339,9 @@ to
 when forcing the daemon into the background.
 Only relevant when using
 .Fl b Ns / Ns Fl \-background .
-.It Fl N , Fl \-nicelevel Ar int
+.It Fl N Ar int , Fl \-nicelevel Ns = Ns Ar int
 This alters the priority of the process before starting it.
-.It Fl P , Fl \-procsched Ar policy : Ns Ar priority
+.It Fl P Ar policy : Ns Ar priority , Fl \-procsched Ns = Ns Ar policy : Ns Ar priority
 This alters the process scheduler policy and priority of the process
 before starting it.
 The priority can be optionally specified by appending a semicolon
@@ -353,7 +355,7 @@ The currently supported policy values are
 .Sy fifo
 and
 .Sy rr .
-.It Fl I , Fl \-iosched Ar class : Ns Ar priority
+.It Fl I Ar class : Ns Ar priority , Fl \-iosched Ns = Ns Ar class : Ns Ar priority
 This alters the IO scheduler class and priority of the process before
 starting it.
 The priority can be optionally specified by appending a semicolon
@@ -374,7 +376,7 @@ are
 .Sy best-effort
 and
 .Sy real-time .
-.It Fl k , Fl \-umask Ar mask
+.It Fl k Ar mask , Fl \-umask Ns = Ns Ar mask
 This sets the umask of the process before starting it.
 .It Fl m , Fl \-make-pidfile
 Used when starting a program that does not create its own pid file.
@@ -450,20 +452,20 @@ Unable to determine program status.
 Start the
 .Sy foo
 daemon, unless one is already running (a process named
-.Qo Li foo Qc ,
+.Dq foo ,
 running as user
-.Qo Li foo Qc ,
+.Dq foo ,
 with pid in
 .Pa foo.pid Ns ):
 .Bd -literal -offset indent
 start-stop-daemon               \e
         --start                 \e
         --oknodo                \e
-        --user foo              \e
-        --name foo              \e
-        --pidfile /run/foo.pid  \e
-        --startas /usr/sbin/foo \e
-        --chuid foo             \e
+        --user=foo              \e
+        --name=foo              \e
+        --pidfile=/run/foo.pid  \e
+        --startas=/usr/sbin/foo \e
+        --chuid=foo             \e
         -- --daemon
 .Ed
 .It
@@ -476,10 +478,10 @@ and wait up to 5 seconds for it to stop:
 start-stop-daemon               \e
         --stop                  \e
         --oknodo                \e
-        --user foo              \e
-        --name foo              \e
-        --pidfile /run/foo.pid  \e
-        --retry 5
+        --user=foo              \e
+        --name=foo              \e
+        --pidfile=/run/foo.pid  \e
+        --retry=5
 .Ed
 .It
 Demonstration of a custom schedule for stopping
@@ -488,9 +490,9 @@ Demonstration of a custom schedule for stopping
 start-stop-daemon               \e
         --stop                  \e
         --oknodo                \e
-        --user foo              \e
-        --name foo              \e
-        --pidfile /run/foo.pid  \e
+        --user=foo              \e
+        --name=foo              \e
+        --pidfile=/run/foo.pid  \e
         --retry=TERM/30/KILL/5
 .Ed
 .El
