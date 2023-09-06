@@ -10,6 +10,7 @@ SSD from dpkg distribution with adjustments for CRUX.
 This SSD have the following little differences:
 - CRUX' patch by default
 - no systemd-related code
+- mdoc(7) manual page
 - `-e, --env` option to set/remove environment variables
 - suckless style build
 - various fixes and cleanups
@@ -29,7 +30,6 @@ REQUIREMENTS
 - C99 compiler
 - POSIX sh(1p) and "mandatory utilities"
 - GNU/BSD make(1)
-- pod2man(1pm) to build man page
 
 
 INSTALL
