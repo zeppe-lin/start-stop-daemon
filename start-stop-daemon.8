@@ -62,7 +62,7 @@ a
 you must specify a pidfile.
 .Sh COMMANDS
 .Bl -tag -width Ds
-.It Fl S , Fl \-start Op -- Ar arguments
+.It Fl S , Fl \-start Op -- Ar args ...
 Check for the existence of a specified process.
 If such a process exists,
 .Nm
@@ -78,7 +78,7 @@ the executable specified by
 or, if specified, by
 .Fl a Ns / Ns Fl \-startas .
 Any
-.Em arguments
+.Em args
 given after
 .Sy --
 on the command line are passed unmodified to the program being
