@@ -16,14 +16,17 @@
 .\"
 .Dd September 6, 2023
 .Dt START-STOP-DAEMON 8
-.Os
+.Os start-stop-daemon @VERSION@
+.\" ==================================================================
 .Sh NAME
 .Nm start-stop-daemon
 .Nd start and stop system daemon programs
+.\" ==================================================================
 .Sh SYNOPSIS
 .Nm start-stop-daemon
 .Op option ...
 .Ar command
+.\" ==================================================================
 .Sh DESCRIPTION
 The
 .Nm
@@ -62,6 +65,7 @@ For daemons which have long-lived children which need to live through
 a
 .Fl K Ns / Ns Fl \-stop ,
 you must specify a pidfile.
+.\" ==================================================================
 .Sh COMMANDS
 .Bl -tag -width Ds
 .It Fl S , Fl \-start Op -- Ar args ...
@@ -112,7 +116,9 @@ Show usage information and exit.
 .It Fl V , Fl \-version
 Show the program version and exit.
 .El
+.\" ==================================================================
 .Sh OPTIONS
+.\" ------------------------------------------------------------------
 .Ss Matching options
 .Bl -tag -width Ds
 .It Fl \-pid Ns = Ns Ar pid
@@ -182,6 +188,7 @@ or
 Using this matching option alone will cause all processes matching the
 user to be acted on.
 .El
+.\" ------------------------------------------------------------------
 .Ss Generic options
 .Bl -tag -width Ds
 .It Fl g Ar group Ns | Ns Ar gid , Fl \-group Ns = Ns Ar group Ns | Ns Ar gid
@@ -406,6 +413,7 @@ after terminating the process.
 .It Fl v , Fl \-verbose
 Print verbose informational messages.
 .El
+.\" ==================================================================
 .Sh EXIT STATUS
 .Bl -tag -width Ds
 .It 0
@@ -446,6 +454,7 @@ Program is not running.
 .It 4
 Unable to determine program status.
 .El
+.\" ==================================================================
 .Sh EXAMPLES
 .Bl -bullet
 .It
