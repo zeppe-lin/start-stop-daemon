@@ -7,7 +7,7 @@ all: start-stop-daemon
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
 	mkdir -p ${DESTDIR}${MANPREFIX}/man8
-	cp -f start-stop-daemon   ${DESTDIR}${PREFIX}/sbin/
+	cp -f start-stop-daemon ${DESTDIR}${PREFIX}/sbin/
 	sed "s/@VERSION@/${VERSION}/" start-stop-daemon.8 > \
 		${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 	chmod 0755 ${DESTDIR}${PREFIX}/sbin/start-stop-daemon
