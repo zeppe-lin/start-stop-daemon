@@ -8,10 +8,10 @@ This distribution is a fork of CRUX' SSD as of commit 6209edb (Sat Apr
 SSD from dpkg distribution with adjustments for CRUX.
 
 This SSD have the following little differences:
-- CRUX' patch by default
+- applied CRUX patch by default
 - no systemd-related code
 - manual page in mdoc(7) format
-- `-e/--env` option to set/remove environment variables
+- new `-e/--env` option to set/remove environment variables
 - suckless style build
 - various fixes and cleanups
 
