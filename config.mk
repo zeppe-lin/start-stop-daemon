@@ -1,6 +1,6 @@
 # project metadata
 NAME      = start-stop-daemon
-VERSION   = 1.22
+VERSION   = 1.22.1
 DIST      = ${NAME}-${VERSION}
 
 # paths
