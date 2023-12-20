@@ -33,15 +33,6 @@ mancheck:
 	@echo "=======> Check man page for syntax errors"
 	@mandoc -T lint start-stop-daemon.8
 
-podchecker:
-	@echo "=======> Check PODs for syntax errors"
-	@find . -name '*.pod' -exec podchecker {} +
-
-shellcheck:
-	@echo "=======> Check shell scripts for syntax errors"
-	@grep -m1 -Irl '^#\s*!/bin/sh' --exclude-dir=.git* \
-		| xargs -L10 -r shellcheck -s sh
-
 cppcheck:
 	@echo "=======> Static C/C++ code analysis"
 	@cppcheck --quiet --enable=all --check-level=exhaustive  \
