@@ -25,10 +25,9 @@ deadlinks:
 	@echo "=======> Check for dead links"
 	@$(CURMAKE) curllinks | grep -v '^\[200\]' | sort -u
 
-mandoc_check:
-	@echo "=======> Check man pages for syntax errors"
-	@find . -not -path '*/.*' -type f -name '*.[1-9]' \
-		-exec mandoc -T lint {} +
+mancheck:
+	@echo "=======> Check man page for syntax errors"
+	@mandoc -T lint start-stop-daemon.8
 
 podchecker:
 	@echo "=======> Check PODs for syntax errors"
