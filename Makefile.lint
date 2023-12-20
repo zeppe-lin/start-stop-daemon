@@ -49,7 +49,7 @@ longlines:
 ######################################################################
 
 .PHONY: all greplinks curllinks deadlinks \
-	mandoc_check podchecker shellcheck cppcheck flawfinder longlines
+	mancheck cppcheck flawfinder longlines
 
 # vim: cc=72 tw=70
 # End of file.
