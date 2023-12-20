@@ -28,6 +28,8 @@ deadlinks:
 spellcheck:
 	@echo "=======> Check man page for spelling errors"
 	@mandoc -T html start-stop-daemon.8 | hunspell -H -l - | sort -u
+	@echo "=======> Check README.md for spelling errors"
+	@hunspell -l README.md | sort -u
 
 mancheck:
 	@echo "=======> Check man page for syntax errors"
