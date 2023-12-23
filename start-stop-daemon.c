@@ -1084,11 +1084,11 @@ set_action(enum action_code new_action)
 	action = new_action;
 }
 
-#define OPT_PID		500
-#define OPT_PPID	501
-#define OPT_RM_PIDFILE	502
-#define OPT_NOTIFY_AWAIT	503
-#define OPT_NOTIFY_TIMEOUT	504
+#define OPT_PID             500
+#define OPT_PPID            501
+#define OPT_RM_PIDFILE      502
+#define OPT_NOTIFY_AWAIT    503
+#define OPT_NOTIFY_TIMEOUT  504
 
 static void
 parse_options(int argc, char * const *argv)
