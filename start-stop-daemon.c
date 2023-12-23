@@ -149,8 +149,8 @@
 # include <sched.h>
 #else
 # define SCHED_OTHER -1
-# define SCHED_FIFO -1
-# define SCHED_RR -1
+# define SCHED_FIFO  -1
+# define SCHED_RR    -1
 #endif
 
 /* At least macOS and AIX do not define this. */
@@ -810,25 +810,25 @@ struct sigpair {
 };
 
 static const struct sigpair siglist[] = {
-	{ "ABRT",	SIGABRT	},
-	{ "ALRM",	SIGALRM	},
-	{ "FPE",	SIGFPE	},
-	{ "HUP",	SIGHUP	},
-	{ "ILL",	SIGILL	},
-	{ "INT",	SIGINT	},
-	{ "KILL",	SIGKILL	},
-	{ "PIPE",	SIGPIPE	},
-	{ "QUIT",	SIGQUIT	},
-	{ "SEGV",	SIGSEGV	},
-	{ "TERM",	SIGTERM	},
-	{ "USR1",	SIGUSR1	},
-	{ "USR2",	SIGUSR2	},
-	{ "CHLD",	SIGCHLD	},
-	{ "CONT",	SIGCONT	},
-	{ "STOP",	SIGSTOP	},
-	{ "TSTP",	SIGTSTP	},
-	{ "TTIN",	SIGTTIN	},
-	{ "TTOU",	SIGTTOU	}
+	{ "ABRT",  SIGABRT },
+	{ "ALRM",  SIGALRM },
+	{ "FPE",   SIGFPE  },
+	{ "HUP",   SIGHUP  },
+	{ "ILL",   SIGILL  },
+	{ "INT",   SIGINT  },
+	{ "KILL",  SIGKILL },
+	{ "PIPE",  SIGPIPE },
+	{ "QUIT",  SIGQUIT },
+	{ "SEGV",  SIGSEGV },
+	{ "TERM",  SIGTERM },
+	{ "USR1",  SIGUSR1 },
+	{ "USR2",  SIGUSR2 },
+	{ "CHLD",  SIGCHLD },
+	{ "CONT",  SIGCONT },
+	{ "STOP",  SIGSTOP },
+	{ "TSTP",  SIGTSTP },
+	{ "TTIN",  SIGTTIN },
+	{ "TTOU",  SIGTTOU }
 };
 
 static int
@@ -1094,39 +1094,39 @@ static void
 parse_options(int argc, char * const *argv)
 {
 	static struct option longopts[] = {
-		{ "help",		0, NULL, 'H'},
-		{ "stop",		0, NULL, 'K'},
-		{ "start",		0, NULL, 'S'},
-		{ "status",		0, NULL, 'T'},
-		{ "version",		0, NULL, 'V'},
-		{ "startas",		1, NULL, 'a'},
-		{ "name",		1, NULL, 'n'},
-		{ "oknodo",		0, NULL, 'o'},
-		{ "pid",		1, NULL, OPT_PID},
-		{ "ppid",		1, NULL, OPT_PPID},
-		{ "pidfile",		1, NULL, 'p'},
-		{ "quiet",		0, NULL, 'q'},
-		{ "signal",		1, NULL, 's'},
-		{ "test",		0, NULL, 't'},
-		{ "user",		1, NULL, 'u'},
-		{ "group",		1, NULL, 'g'},
-		{ "chroot",		1, NULL, 'r'},
-		{ "verbose",		0, NULL, 'v'},
-		{ "exec",		1, NULL, 'x'},
-		{ "chuid",		1, NULL, 'c'},
-		{ "env",		1, NULL, 'e'},
-		{ "nicelevel",		1, NULL, 'N'},
-		{ "procsched",		1, NULL, 'P'},
-		{ "iosched",		1, NULL, 'I'},
-		{ "umask",		1, NULL, 'k'},
-		{ "background",		0, NULL, 'b'},
-		{ "no-close",		0, NULL, 'C'},
-		{ "output",		1, NULL, 'O'},
-		{ "make-pidfile",	0, NULL, 'm'},
-		{ "remove-pidfile",	0, NULL, OPT_RM_PIDFILE},
-		{ "retry",		1, NULL, 'R'},
-		{ "chdir",		1, NULL, 'd'},
-		{ NULL,			0, NULL, 0  }
+		{ "help",            0, NULL, 'H'},
+		{ "stop",            0, NULL, 'K'},
+		{ "start",           0, NULL, 'S'},
+		{ "status",          0, NULL, 'T'},
+		{ "version",         0, NULL, 'V'},
+		{ "startas",         1, NULL, 'a'},
+		{ "name",            1, NULL, 'n'},
+		{ "oknodo",          0, NULL, 'o'},
+		{ "pid",             1, NULL, OPT_PID},
+		{ "ppid",            1, NULL, OPT_PPID},
+		{ "pidfile",         1, NULL, 'p'},
+		{ "quiet",           0, NULL, 'q'},
+		{ "signal",          1, NULL, 's'},
+		{ "test",            0, NULL, 't'},
+		{ "user",            1, NULL, 'u'},
+		{ "group",           1, NULL, 'g'},
+		{ "chroot",          1, NULL, 'r'},
+		{ "verbose",         0, NULL, 'v'},
+		{ "exec",            1, NULL, 'x'},
+		{ "chuid",           1, NULL, 'c'},
+		{ "env",             1, NULL, 'e'},
+		{ "nicelevel",       1, NULL, 'N'},
+		{ "procsched",       1, NULL, 'P'},
+		{ "iosched",         1, NULL, 'I'},
+		{ "umask",           1, NULL, 'k'},
+		{ "background",      0, NULL, 'b'},
+		{ "no-close",        0, NULL, 'C'},
+		{ "output",          1, NULL, 'O'},
+		{ "make-pidfile",    0, NULL, 'm'},
+		{ "remove-pidfile",  0, NULL, OPT_RM_PIDFILE},
+		{ "retry",           1, NULL, 'R'},
+		{ "chdir",           1, NULL, 'd'},
+		{ NULL,              0, NULL, 0  }
 	};
 	const char *pid_str = NULL;
 	const char *ppid_str = NULL;
@@ -2148,10 +2148,10 @@ do_pidfile(const char *name)
 			if (fstat(fd, &st) < 0)
 				fatale("cannot stat pidfile %s", name);
 
-			if (match_mode == MATCH_PIDFILE &&
-			    ((st.st_uid != getuid() && st.st_uid != 0) ||
-			     ((st.st_gid != getgid() && st.st_gid != 0) &&
-			      (st.st_mode & 0020))))
+			if (   match_mode == MATCH_PIDFILE
+			    && (   (st.st_uid != getuid() && st.st_uid != 0)
+			        || (   (st.st_gid != getgid() && st.st_gid != 0)
+			            && (st.st_mode & 0020))))
 				fatal("matching only on non-root pidfile %s "
 				      "is insecure", name);
 
