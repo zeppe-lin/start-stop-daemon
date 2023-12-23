@@ -2733,5 +2733,5 @@ main(int argc, char **argv)
 	return 0;
 }
 
-/* vim:cc=72:tw=70
+/* vim: cc=72 tw=70
  * End of file. */
