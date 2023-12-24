@@ -14,7 +14,7 @@ This SSD have the following little differences:
 - no systemd-related code
 - manual page in mdoc(7) format
 - new `-e/--env` option to set/remove environment variables
-- suckless style build
+- suckless-style build
 - various fixes and cleanups
 
 See git log for complete/further differences.
