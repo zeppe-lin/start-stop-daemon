@@ -2,8 +2,7 @@ Copyright (C) 1999      Klee Dienes          <klee@mit.edu>
 Copyright (C) 1999      Ben Collins          <bcollins@debian.org>
 Copyright (C) 1999-2002 Wichert Akkerman     <wakkerma@debian.org>
 Copyright (C) 2000-2003 Adam Heath           <doogie@debian.org>
-Copyright (C) 2004-2005 Scott James Remnant  <keybuk@debian.org>,
-                                             <scott@netsplit.com>
+Copyright (C) 2004-2005 Scott James Remnant  <keybuk@debian.org>
 Copyright (C) 2006-2023 Guillem Jover        <guillem@debian.org>
 Copyright (C) 2007      Nicolas Francois     <nekral-guest@users.alioth.debian.org>
 Copyright (C) 2008      Andreas Påhlsson     <andreas.pahlsson@xcerion.com>
@@ -18,4 +17,6 @@ Copyright (C) 2015      Sven Joachim         <svenjoac@gmx.de>
 Copyright (C) 2017      Fredrik Rinnestam    <fredrik@crux.nu>
 Copyright (C) 2018      Trek                 <trek00@inbox.ru>
 Copyright (C) 2018-2021 Steffen Nurpmeso     <steffen@sdaoden.eu>
-Copyright (C) 2022-2023 Alexandr Savca       <alexandr.savca89@gmail.com>
+
+Copyright (C) 2022-2024 Zeppe-Lin            <http://zeppel.ink>
+Copyright (C) 2022-2024 Alexandr Savca       <alexandr.savca89@gmail.com>
