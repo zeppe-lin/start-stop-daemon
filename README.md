@@ -9,19 +9,19 @@ This distribution is a fork of CRUX' SSD as of commit 6209edb (Sat Apr 17
 distribution with adjustments for CRUX.
 
 This SSD have the following little differences:
-* applied CRUX patch by default
-* no systemd-related code
-* manual page in mdoc(7) format
-* new `-e/--env` option to set/remove environment variables
-* suckless-style build
-* various fixes and cleanups
+  * applied CRUX patch by default
+  * no systemd-related code
+  * manual page in mdoc(7) format
+  * new `-e/--env` option to set/remove environment variables
+  * suckless-style build
+  * various fixes and cleanups
 
 See git log for complete/further differences.
 
 The original sources can be downloaded from:
-0. https://git.dpkg.org/git/dpkg/dpkg.git                (git)
-1. git://crux.nu/tools/start-stop-daemon.git             (git)
-2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git (web)
+  0. https://git.dpkg.org/git/dpkg/dpkg.git                (git)
+  1. git://crux.nu/tools/start-stop-daemon.git             (git)
+  2. https://crux.nu/gitweb/?p=tools/start-stop-daemon.git (web)
 
 
 REQUIREMENTS
@@ -29,9 +29,9 @@ REQUIREMENTS
 
 Build time
 ----------
-* C99 compiler
-* POSIX sh(1p) and "mandatory utilities"
-* GNU/BSD make(1)
+  * C99 compiler
+  * POSIX sh(1p) and "mandatory utilities"
+  * GNU/BSD make(1)
 
 
 INSTALL
@@ -47,10 +47,10 @@ LICENSE
 =======
 
 The following files have different licenses:
-* `start-stop-daemon.8.pod` is licensed through the GNU General
-  Public License v2 <http://gnu.org/licenses/gpl.html>.
-* `start-stop-daemon.c` is licensed through Public Domain
-  License <https://creativecommons.org/publicdomain/>.
+  * `start-stop-daemon.8.pod` is licensed through the GNU General Public
+    License v2 <http://gnu.org/licenses/gpl.html>.
+  * `start-stop-daemon.c` is licensed through Public Domain License
+    <https://creativecommons.org/publicdomain/>.
 
 Other files in this distribution are licensed through the same Public Domain
 License.
