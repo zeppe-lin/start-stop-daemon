@@ -3,8 +3,7 @@
 
 CURMAKE = $(MAKE) -s -f Makefile.lint
 
-all:	deadlinks mandoc_check podchecker shellcheck cppcheck \
-	flawfinder longlines
+all:	deadlinks spellcheck mancheck cppcheck flawfinder longlines
 
 ######################################################################
 # Helpers.                                                           #
