@@ -8,5 +8,6 @@ PREFIX    = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 
 # flags
-CFLAGS    = -pedantic -Wall -Wextra -Wformat -DVERSION=\"${VERSION}\"
+CPPFLAGS  = -DVERSION=\"${VERSION}\"
+CFLAGS    = -pedantic -Wall -Wextra -Wformat ${CPPFLAGS}
 LDFLAGS   =
