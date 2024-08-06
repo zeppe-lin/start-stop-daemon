@@ -10,4 +10,4 @@ MANPREFIX = ${PREFIX}/share/man
 # flags
 CPPFLAGS  = -DVERSION=\"${VERSION}\"
 CFLAGS    = -pedantic -Wall -Wextra -Wformat ${CPPFLAGS}
-LDFLAGS   =
+LDFLAGS   = -static
