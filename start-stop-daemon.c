@@ -39,6 +39,7 @@
 # define HAVE_GETDTABLESIZE
 # define HAVE_IOPRIO_SET
 # define HAVE_SETSID
+# define HAVE_CLOSEFROM
 
 # define _GNU_SOURCE
 # include <unistd.h>
@@ -501,6 +502,7 @@ parse_unsigned(const char *string, int base, int *value_r)
 	return 0;
 }
 
+#ifndef HAVE_CLOSEFROM
 static long
 get_open_fd_max(void)
 {
@@ -510,6 +512,22 @@ get_open_fd_max(void)
 	return sysconf(_SC_OPEN_MAX);
 #endif
 }
+
+static void
+closefrom(int lowfd)
+{
+	long maxfd = get_open_fd_max();
+	int i;
+
+#ifdef HAVE_CLOSE_RANGE
+	if (close_range(lowfd, maxfd, 0) == 0)
+		return;
+#endif
+
+	for (i = maxfd - 1; i >= lowfd; --i)
+		close(i);
+}
+#endif
 
 #ifndef HAVE_SETSID
 static void
@@ -2478,13 +2496,10 @@ do_start(int argc, char **argv)
 		dup2(output_fd, 2); /* stderr */
 	}
 	if (background && close_io) {
-		int i;
-
 		dup2(devnull_fd, 0); /* stdin */
 
 		 /* Now close all extra fds. */
-		for (i = get_open_fd_max() - 1; i >= 3; --i)
-			close(i);
+		closefrom(3);
 	}
 	execv(startas, argv);
 	fatale("unable to start %s", startas);
