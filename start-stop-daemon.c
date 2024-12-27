@@ -13,17 +13,17 @@
  *
  * Changes by Ben Collins <bcollins@debian.org>:
  *    * added --chuid, --background and --make-pidfile options,
- *    * placed in public domain as well.
+ *    * placed in public domain as well
  *
  * Changes by Sontri Tomo Huynh <huynh.29@osu.edu>
  *        and Andreas Schuldei <andreas@schuldei.org>:
  *    * ported to OpenBSD
  *
  * Changes by Ian Jackson:
- *    * added --retry option (and associated rearrangements).
+ *    * added --retry option (and associated rearrangements)
  *
  * Changes by Alexandr Savca:
- *    * added --env option.
+ *    * added --env option
  *
  * See COPYRIGHT file for complete copyright notices.
  */
