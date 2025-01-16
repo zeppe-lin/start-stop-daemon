@@ -1,7 +1,7 @@
 OVERVIEW
 ========
 
-This directory contains start-stop-daemon (SSD), a tool that is used
+This repository contains start-stop-daemon (SSD), a tool that is used
 to control the creation and termination of system-level processes.
 
 This distribution is a fork of CRUX' SSD as of commit 6209edb (Sat Apr
