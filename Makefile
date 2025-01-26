@@ -21,7 +21,7 @@ clean:
 	rm -f ${DIST}.tar.gz
 
 release:
-	git tag -a v$(VERSION) -m v$(VERSION)
+	git tag -a v${VERSION} -m v${VERSION}
 
 dist: clean
 	git archive --format=tar.gz -o ${DIST}.tar.gz --prefix=${DIST}/ HEAD
