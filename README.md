@@ -46,10 +46,10 @@ LICENSE
 =======
 
 The following files have different licenses:
-  * `start-stop-daemon.8.pod` is licensed through the GNU General
-    Public License v2 <http://gnu.org/licenses/gpl.html>.
-  * `start-stop-daemon.c` is licensed through Public Domain License
-    <https://creativecommons.org/publicdomain/>.
+  * `start-stop-daemon.8` is licensed through the GNU General Public
+    License v2 <http://gnu.org/licenses/gpl.html>.
+  * `start-stop-daemon.c` is licensed through the Public Domain
+    License <https://creativecommons.org/publicdomain/>.
 
 Other files in this distribution are licensed through the same Public
 Domain License.
