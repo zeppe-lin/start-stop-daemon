@@ -42,6 +42,16 @@ this package.
 See `config.mk` file for configuration parameters.
 
 
+DOCUMENTATION
+=============
+
+Online documentation
+--------------------
+
+Manual pages:
+- [start-stop-daemon.8](https://zeppe-lin.github.io/start-stop-daemon.8.html)
+
+
 LICENSE
 =======
 
