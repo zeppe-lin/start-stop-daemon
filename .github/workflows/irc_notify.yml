@@ -13,7 +13,8 @@ jobs:
         if: github.event_name == 'push'
         with:
           channel: '#zeppe-lin'
-          nickname: zeppbot
+          nickname: zeppe-lin
+          sasl_password: ${{ secrets.LIBERACHAT_PASSWORD }}
           message: |-
             ${{ github.actor }} pushed ${{ github.event.repository.name }}:${{ github.ref_name || github.event.ref }} -- ${{ github.event.compare }}
             ${{ join(github.event.commits.*.message, '
@@ -24,7 +25,8 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           channel: '#zeppe-lin'
-          nickname: zeppbot
+          nickname: zeppe-lin
+          sasl_password: ${{ secrets.LIBERACHAT_PASSWORD }}
           message: |-
             ${{ github.actor }} opened PR ${{ github.event.pull_request.html_url }}
 
