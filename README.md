@@ -11,8 +11,8 @@ SSD from dpkg distribution with adjustments for CRUX.
 This SSD have the following little differences:
   * applied CRUX patch by default
   * no systemd-related code
-  * manual page in mdoc(7) format
-  * new `-e/--env` option to set/remove environment variables
+  * manual page in scdoc(5) format
+  * new -e/--env option to set/remove environment variables
   * suckless-style build
   * various fixes and cleanups
 
@@ -29,35 +29,33 @@ REQUIREMENTS
 Build time
 ----------
   * C99 compiler
-  * POSIX sh(1p) and "mandatory utilities"
-  * GNU/BSD make(1)
+  * POSIX sh(1p), make(1p) and "mandatory utilities"
+  * scdoc(1) to build manual page
 
+**Note:** make(1p) should support POSIX 2024, or use BSD/GNU make(1).
 
 INSTALL
 =======
 
-The shell commands `make && make install` should build and install
-this package.
+To build and install this package, run:
 
-See `config.mk` file for configuration parameters.
+    make && make install
+
+See config.mk file for configuration parameters.
 
 
 DOCUMENTATION
 =============
 
-Online documentation
---------------------
-
-Manual pages:
-- [start-stop-daemon.8](https://zeppe-lin.github.io/start-stop-daemon.8.html)
+See start-stop-daemon.8.scdoc manual page.
 
 
 LICENSE
 =======
 
 The following files have different licenses:
-  * `start-stop-daemon.8` is licensed through the GNU General Public
-    License v2 <http://gnu.org/licenses/gpl.html>.
+  * `start-stop-daemon.8.scdoc` is licensed through the GNU General
+    Public License v2 <http://gnu.org/licenses/gpl.html>.
   * `start-stop-daemon.c` is licensed through the Public Domain
     License <https://creativecommons.org/publicdomain/>.
 
