@@ -2,7 +2,10 @@
 
 include config.mk
 
-all: start-stop-daemon
+all: start-stop-daemon start-stop-daemon.8
+
+start-stop-daemon.8: start-stop-daemon.8.scdoc
+	scdoc < start-stop-daemon.8.scdoc > $@
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/sbin
@@ -17,7 +20,7 @@ uninstall:
 	rm -f ${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 
 clean:
-	rm -f start-stop-daemon
+	rm -f start-stop-daemon start-stop-daemon.8
 	rm -f ${DIST}.tar.gz
 
 release:

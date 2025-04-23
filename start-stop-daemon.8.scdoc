@@ -1,0 +1,363 @@
+START-STOP-DAEMON(8)
+
+; See the COPYRIGHT file for copyright notices.
+; 
+; This is free software; you can redistribute it and/or modify¬
+; it under the terms of the GNU General Public License as published by¬
+; the Free Software Foundation; either version 2 of the License, or¬
+; (at your option) any later version.¬
+; 
+; This is distributed in the hope that it will be useful,¬
+; but WITHOUT ANY WARRANTY; without even the implied warranty of¬
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the¬
+; GNU General Public License for more details.¬
+; 
+; You should have received a copy of the GNU General Public License¬
+; along with this program.  If not, see <https://www.gnu.org/licenses/>.¬
+
+# NAME
+
+start-stop-daemon - start and stop system daemon programs
+
+# SYNOPSIS
+
+*start-stop-daemon* [_option_ ...] _command_
+
+# DESCRIPTION
+
+The *start-stop-daemon* utility is used to control the creation and
+termination of system-level processes.   Using one of the matching
+options, *start-stop-daemon* can be configured to find existing
+instances of a running process.
+
+*Note:* Unless *--pid* or *-p*/*--pidfile* are specified,
+*start-stop-daemon* behaves similar to *killall*(1).
+*start-stop-daemon* will scan the process table looking for any
+processes which match the process name, parent pid, uid, and/or gid
+(if specified).  Any matching process will prevent *-S*/*--start* from
+starting the daemon.  All matching processes will be sent the TERM
+signal (or the one specified via *-s*/*--signal* or *-R*/*--retry*) if
+*-K*/*--stop* is specified.  For daemons which have long-lived
+children which need to live through a *-K*/*--stop*, you must specify
+a pidfile.
+
+# COMMANDS
+
+*-S*, *--start* [*--* _argument_ ...]
+	Check for the existence of a specified process.  If such a
+	process exists, *start-stop-daemon* does nothing, and exits
+	with error status 1 (0 if *-o*/*--oknodo* is specified).  If
+	such a process does not exist, it starts an instance, using
+	either the executable specified by *-x*/*--exec* or, if
+	specified, by *-a*/*--startas*.  Any _argument_(s) given after
+	*--* on the command line are passed unmodified to the program
+	being started.
+
+*-K*, *--stop*
+	Checks for the existence of a specified process.  If such a
+	process exists, *start-stop-daemon* sends it the signal
+	specified by *-s*/*--signal*, and exits with error status 0.
+	If such a process does not exist, *start-stop-daemon* exits
+	with error status 1 (0 if *-o*/*--oknodo* is specified).  If
+	*-R*/*--retry* is specified, then *start-stop-daemon* will
+	check that the process(es) have terminated.
+
+*-T*, *--status*
+	Check for the existence of a specified process, and returns an
+	exit status code, according to the LSB Init Script Actions.
+
+*-H*, *--help*
+	Show usage information and exit.
+
+*-V*, *--version*
+	Show the program version and exit.
+
+# OPTIONS
+
+## Matching options
+
+*--pid*=_pid_
+	Check for a process with the specified _pid_.
+	The _pid_ must be a number greater than 0.
+
+*--ppid*=_ppid_
+	Check for a process with the specified parent pid _ppid_.
+	The _ppid_ must be a number greater than 0.
+
+*-p* _pidfile_, *--pidfile*=_pidfile_
+	Check whether a process has created the file _pidfile_.
+
+	*Note:* Using this matching option alone might cause
+	unintended processes to be acted on, if the old process
+	terminated without being able to remove the _pidfile_.
+
+	*Warning:* Using this match option with a world-writable
+	_pidfile_ or using it alone with a daemon that writes the
+	_pidfile_ as an unprivileged user will be refused with an
+	error as this is a security risk, because either any user can
+	write to it, or if the daemon gets compromised, the contents
+	of the pidfile cannot be trusted, and then a privileged runner
+	(such as an init script executed as root) would end up acting
+	on any system process.  Using _/dev/null_ is exempt from these
+	checks.
+
+*-x* _executable_, *--exec*=_executable_
+	Check for processes that are instances of this _executable_.
+	The _executable_ argument should be an absolute pathname.
+
+	*Note:* This might not work as intended with interpreted
+	scripts, as the _executable_ will point to the interpreter.
+	Take into account processes running from inside a chroot will
+	also be matched, so other match restrictions might be needed.
+
+*-n* _process-name_, *--name*=_process-name_
+	Check for processes with the name _process-name_.
+	The _process-name_ is usually the process filename, but it
+	could have been changed by the process itself.
+
+	*Note:* On most systems this information is retrieved from the
+	process comm name from the kernel, which tends to have a
+	relatively short length limit (assuming more than 15
+	characters is non-portable).
+
+*-u* _username_|_uid_, *--user*=_username_|_uid_
+	Check for processes owned by the user specified by _username_
+	or _uid_.
+
+	*Note:* Using this matching option alone will cause all
+	processes matching the user to be acted on.
+
+## Generic options
+
+*-g* _group_|_gid_, *--group*=_group_|_gid_
+	Change to _group_ or _gid_ when starting the process.
+
+*-s* _signal_, *--signal*=_signal_
+	With *-K*/*--stop*, specifies the signal to send to processes
+	being stopped (default TERM).
+
+*-R* _timeout_|_schedule_, *--retry*=_timeout_|_schedule_
+	With *-K*/*--stop*, specifies that *start-stop-daemon* is to
+	check whether the process(es) do finish.  It will check
+	repeatedly whether any matching processes are running, until
+	none are.  If the processes do not exit it will then take
+	further action as determined by the _schedule_.
+
+	If _timeout_ is specified instead of _schedule_, then the
+	schedule signal/timeout/KILL/timeout is used, where signal is
+	the signal specified with *-s*/*--signal*.
+
+	_schedule_ is a list of at least two items separated by
+	slashes (*/*); each item may be -_signal-number_ or
+	\[-\]_signal-name_, which means to send that signal, or
+	timeout, which means to wait that many seconds for processes
+	to exit, or forever, which means to repeat the rest of the
+	schedule forever if necessary.
+
+	If the end of the schedule is reached and forever is not
+	specified, then *start-stop-daemon* exits with error status 2.
+	If a _schedule_ is specified, then any signal specified with
+	*-s*/*--signal* is ignored.
+
+*-a* _pathname_, *--startas*=_pathname_
+	With *-S*/*--start*, start the process specified by
+	_pathname_.  If not specified, defaults to the argument given
+	to *-x*/*--exec*.
+
+*-t*, *--test*
+	Print actions that would be taken and set appropriate return
+	value, but take no action.
+
+*-o*, *--oknodo*
+	Return exit status 0 instead of 1 if no actions are (would be)
+	taken.
+
+*-q*, *--quiet*
+	Do not print informational messages; only display error
+	messages.
+
+*-c* _username_|_uid_[:_group_|_gid_], \
+*--chuid*=_username_|_uid_[:_group_|_gid_]
+	Change to this _username_/_uid_ before starting the process.
+	You can also specify a _group_ by appending a semicolon
+	('*:*'), then the _group_ or _gid_ in the same way as you
+	would for the *chown*(1) command (user:group).  If a user is
+	specified without a _group_, the primary GID for that user is
+	used.  When using this option you must realize that the
+	primary and supplemental groups are set as well, even if the
+	*-g*/*--group* option is not specified.  The *-g*/*--group*
+	option is only for groups that the user isn't normally a
+	member of (like adding per process group membership for
+	generic users like nobody).
+
+*-e* _var_[=_value_], *--env*=_var_[=_value_]
+	Set the environment variable _var_ to _value_.
+
+	*Warning:* The GNU C library implementation provides a
+	nonstandard extension.  If *-e*/*--env* argument does not
+	include an equal sign (e.g., *--env VAR*) then the named
+	variable is removed from the caller's environment.  See
+	*putenv*(3) for implementation details in your C standard
+	library.
+
+*-r* _root_, *--chroot*=_root_
+	Change directory and chroot to _root_ before starting the
+	process.
+
+	*Note*: The pidfile is also written after the chroot.
+
+*-d* _path_, *--chdir*=_path_
+	Change directory to _path_ before starting the process.  This
+	is done after the chroot if the *-r*/*--chroot* option is set.
+	When not specified, *start-stop-daemon* will change directory
+	to the root directory before starting the process.
+
+*-b*, *--background*
+	Typically used with programs that don't detach on their own.
+	This option will force *start-stop-daemon* to fork before
+	starting the process, and force it into the background.
+
+	*Warning:* *start-stop-daemon* cannot check the exit status if
+	the process fails to execute for any reason.  This is a last
+	resort, and is only meant for programs that either make no
+	sense forking on their own, or where it's not feasible to add
+	the code for them to do this themselves.
+
+*-C*, *--no-close*
+	Do not close any file descriptor when forcing the daemon into
+	the background.  Used for debugging purposes to see the
+	process output, or to redirect file descriptors to log the
+	process output.  Only relevant when using *-b*/*--background*.
+
+*-O* _pathname_, *--output*=_pathname_
+	Redirect stdout and stderr to _pathname_ when forcing the
+	daemon into the background.  Only relevant when using
+	*-b/--background*.
+
+*-N* _int_, *--nicelevel*=_int_
+	This alters the priority of the process before starting it.
+
+*-P* _policy_:_priority_, *--procsched*=_policy_:_priority_
+	This alters the process scheduler policy and priority of the
+	process before starting it.  The _priority_ can be optionally
+	specified by appending a semicolon ('*:*') followed by the
+	value.  The default priority is 0.  The currently supported
+	_policy_ values are _other_, _fifo_ and _rr_.
+
+*-I* _class_:_priority_, *--iosched*=_class_:_priority_
+	This alters the IO scheduler class and priority of the process
+	before starting it.  The priority can be optionally specified
+	by appending a semicolon ('*:*') followed by the value.  The
+	default priority is 4, unless _class_ is idle, then priority
+	will always be 7. The currently supported values for _class_
+	are _idle_, _best-effort_ and _real-time_.
+
+*-k* _mask_, *--umask*=_mask_
+	This sets the umask of the process before starting it.
+
+*-m*, *--make-pidfile*
+	Used when starting a program that does not create its own pid
+	file.  This option will make *start-stop-daemon* create the
+	file referenced with *-p*/*--pidfile* and place the pid into
+	it just before executing the process.  The file will only be
+	removed when stopping the program if *--remove-pidfile* is
+	used.
+
+	*Note:* This feature may not work in all cases.  Most notably
+	when the program being executed forks from its main process.
+	Because of this, it is usually only useful when combined with
+	the *-b*/*--background* option.
+
+*--remove-pidfile*
+	Used when stopping a program that does not remove its own pid
+	file.  This option will make *start-stop-daemon* remove the
+	file referenced with *-p*/*--pidfile* after terminating the
+	process.
+
+*-v*, *--verbose*
+	Print verbose informational messages.
+
+# EXIT STATUS
+
+*0*
+	The requested action was performed.  If *-o*/*--oknodo* was
+	specified, it's also possible that nothing had to be done.
+	This can happen when *-S*/*--start* was specified and a
+	matching process was already running, or when *-K*/*--stop*
+	was specified and there were no matching processes.
+
+*1*
+	If *-o*/*--oknodo* was not specified and nothing was done.
+
+*2*
+	If *-K*/*--stop* and *-R*/*--retry* were specified, but the
+	end of the schedule was reached and the processes were still
+	running.
+
+*3*
+	Any other error.
+
+When using the *-T*/*--status* command, the following status codes are
+returned:
+
+*0*
+	Program is running.
+
+*1*
+	Program is not running and the pid file exists.
+
+*3*
+	Program is not running.
+
+*4*
+	Unable to determine program status.
+
+# EXAMPLES
+
+Start the "foo" daemon, unless one is already running (a process named
+"foo", running as user "foo", with pid in "foo.pid"):
+
+```
+ start-stop-daemon              \
+	--start                 \
+	--oknodo                \
+	--user=foo              \
+	--name=foo              \
+	--pidfile=/run/foo.pid  \
+	--startas=/usr/sbin/foo \
+	--chuid=foo             \
+	-- --daemon
+```
+
+Send SIGTERM to "foo" and wait up to 5 seconds for it to stop:
+
+```
+ start-stop-daemon              \
+	--stop                  \
+	--oknodo                \
+	--user=foo              \
+	--name=foo              \
+	--pidfile=/run/foo.pid  \
+	--retry=5
+```
+
+Demonstration of a custom schedule for stopping "foo":
+
+```
+start-stop-daemon               \
+	--stop                  \
+	--oknodo                \
+	--user=foo              \
+	--name=foo              \
+	--pidfile=/run/foo.pid  \
+	--retry=TERM/30/KILL/5
+```
+
+# HISTORY
+
+*start-stop-daemon* first appeared in Debian.
+
+This implementation was re-worked for Zeppe-Lin by Alexandr Savca
+<alexandr.savca89@gmail.com>.
+
+; vim: ft=scdoc cc=72 tw=70
