@@ -1,5 +1,6 @@
 # build files and artefacts
 start-stop-daemon
+start-stop-daemon.8
 
 # vim undo and swap files
 .*.un~
