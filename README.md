@@ -1,18 +1,19 @@
 OVERVIEW
 ========
 
-This repository contains start-stop-daemon (SSD), a tool that is used
-to control the creation and termination of system-level processes.
+This repository contains `start-stop-daemon` (SSD), a tool that is
+used to control the creation and termination of system-level
+processes.
 
 This distribution is a fork of CRUX' SSD as of commit 6209edb (Sat Apr
 17 2021).  The CRUX' version of SSD is a patched version of Debian's
-SSD from dpkg distribution with adjustments for CRUX.
+SSD from `dpkg` distribution with adjustments for CRUX.
 
 This SSD have the following little differences:
   * applied CRUX patch by default
   * no systemd-related code
-  * manual page in scdoc(5) format
-  * new -e/--env option to set/remove environment variables
+  * manual page in `scdoc(5)` format
+  * new `-e/--env` option to set/remove environment variables
   * suckless-style build
   * various fixes and cleanups
 
@@ -29,10 +30,11 @@ REQUIREMENTS
 Build time
 ----------
   * C99 compiler
-  * POSIX sh(1p), make(1p) and "mandatory utilities"
-  * scdoc(1) to build manual page
+  * POSIX `sh(1p)`, `make(1p)` and "mandatory utilities"
+  * `scdoc(1)` to build manual page
 
-**Note:** make(1p) should support POSIX 2024, or use BSD/GNU make(1).
+**Note**:
+`make(1p)` should support POSIX 2024, or use BSD/GNU `make(1)`.
 
 
 INSTALL
@@ -42,13 +44,13 @@ To build and install this package, run:
 
     make && make install
 
-See config.mk file for configuration parameters.
+See `config.mk` file for configuration parameters.
 
 
 DOCUMENTATION
 =============
 
-See start-stop-daemon.8.scdoc manual page.
+See `start-stop-daemon.8.scdoc` manual page.
 
 
 LICENSE
