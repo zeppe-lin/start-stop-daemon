@@ -1,6 +1,6 @@
 # project metadata
 NAME      = start-stop-daemon
-VERSION   = 1.22.2
+VERSION   = 1.23.0
 
 # paths
 PREFIX    = /usr/local
