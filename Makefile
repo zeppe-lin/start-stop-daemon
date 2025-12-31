@@ -16,7 +16,7 @@ install: all
 	chmod 0644 ${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/start-stop-daemon
+	rm -f ${DESTDIR}${PREFIX}/sbin/start-stop-daemon
 	rm -f ${DESTDIR}${MANPREFIX}/man8/start-stop-daemon.8
 
 clean:
