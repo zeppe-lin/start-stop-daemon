@@ -66,6 +66,10 @@ a pidfile.
 	Check for the existence of a specified process, and returns an
 	exit status code, according to the LSB Init Script Actions.
 
+	With *--verbose*, also print a human-readable message
+	describing the status (running, not running, pidfile exists,
+	or unknown).
+
 *-H*, *--help*
 	Show usage information and exit.
 
@@ -276,6 +280,8 @@ a pidfile.
 
 *-v*, *--verbose*
 	Print verbose informational messages.
+	When used with *--status*, also prints a human-readable status
+	message in addition to returning the exit code.
 
 # EXIT STATUS
 

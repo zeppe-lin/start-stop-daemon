@@ -2729,6 +2729,38 @@ run_stop_schedule(void)
 	return 2;
 }
 
+static enum status_code
+do_status()
+{
+	enum status_code st = do_findprocs();
+	const char *target = execname ? execname : cmdname ? cmdname : "Program";
+
+	if (quietmode != -1) /* normal or quiet mode: no message */
+		return st;
+
+	switch (st) {
+	case STATUS_OK:
+		printf("%s is running", target);
+		if (found && found->pid > 0)
+			printf(" with pid %d", found->pid);
+		printf("\n");
+		break;
+	case STATUS_DEAD_PIDFILE:
+		fprintf(stderr, "%s is not running, but the pid file %s exists\n",
+		        target, pidfile ? pidfile : "(unknown)");
+		break;
+	case STATUS_DEAD:
+		fprintf(stderr, "%s is not running\n", target);
+		break;
+	case STATUS_UNKNOWN:
+	default:
+		fprintf(stderr, "Unable to determine the program status\n");
+		break;
+	}
+
+	return st;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -2740,14 +2772,16 @@ main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	if (action == ACTION_START)
+	switch (action) {
+	case ACTION_START:
 		return do_start(argc, argv);
-	else if (action == ACTION_STOP)
+	case ACTION_STOP:
 		return run_stop_schedule();
-	else if (action == ACTION_STATUS)
-		return do_findprocs();
-
-	return 0;
+	case ACTION_STATUS:
+		return do_status();
+	default:
+		return 0;
+	}
 }
 
 /* vim: cc=72 tw=70
