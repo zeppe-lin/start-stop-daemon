@@ -14,6 +14,7 @@ This SSD have the following little differences:
   * no systemd-related code
   * manual page in `scdoc(5)` format
   * new `-e/--env` option to set/remove environment variables
+  * add verbose status reporting
   * suckless-style build
   * various fixes and cleanups
 
