@@ -1,0 +1,15 @@
+name: Project Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    uses: zeppe-lin/.github-shared-workflows/.github/workflows/release-generic.yml@master
+    with:
+      #artifact_path: "dist/*.tar.gz"
+      prerelease: "false"
+      release_name: "v${{ github.ref_name }}"
+
