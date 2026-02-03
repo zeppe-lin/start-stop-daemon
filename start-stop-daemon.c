@@ -2741,8 +2741,14 @@ do_status()
 	switch (st) {
 	case STATUS_OK:
 		printf("%s is running", target);
-		if (found && found->pid > 0)
-			printf(" with pid %d", found->pid);
+
+		if (found) {
+			printf(" with pid%s", found->next ? "s" : "");
+
+			for (struct pid_list *p = found; p; p = p->next)
+				printf(p == found ? " %d" : ", %d", (int)p->pid);
+		}
+
 		printf("\n");
 		break;
 	case STATUS_DEAD_PIDFILE:
