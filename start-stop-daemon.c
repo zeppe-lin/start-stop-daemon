@@ -24,6 +24,7 @@
  *
  * Changes by Alexandr Savca:
  *    * added --env option
+ *    * added --verbose status reporting
  *
  * See COPYRIGHT file for complete copyright notices.
  */
