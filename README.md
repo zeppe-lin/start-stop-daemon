@@ -12,11 +12,10 @@ SSD from `dpkg` distribution with adjustments for CRUX.
 This SSD have the following little differences:
   * applied CRUX patch by default
   * no systemd-related code
+  * no cross-platform, linux-only
   * manual page in `scdoc(5)` format
   * new `-e/--env` option to set/remove environment variables
   * add verbose status reporting
-  * suckless-style build
-  * various fixes and cleanups
 
 See git log for complete/further differences.
 
@@ -24,6 +23,7 @@ The original sources can be downloaded from:
   1. https://git.dpkg.org/git/dpkg/dpkg.git
   2. https://git.crux.nu/tools/start-stop-daemon.git
 
+---
 
 REQUIREMENTS
 ============
@@ -37,31 +37,35 @@ Build time
 **Note**:
 `make(1p)` should support POSIX 2024, or use BSD/GNU `make(1)`.
 
+---
 
 INSTALL
 =======
 
 To build and install this package, run:
 
-    make && make install
+```sh
+make && make install
+```
 
 See `config.mk` file for configuration parameters.
 
+---
 
 DOCUMENTATION
 =============
 
 See `start-stop-daemon.8.scdoc` manual page.
 
+---
 
 LICENSE
 =======
 
-The following files have different licenses:
-  * `start-stop-daemon.8.scdoc` is licensed through the GNU General
-    Public License v2 <http://gnu.org/licenses/gpl.html>.
-  * `start-stop-daemon.c` is licensed through the Public Domain
-    License <https://creativecommons.org/publicdomain/>.
+This program contains both public domain contributions and
+GPL-licensed code.  The combined work is distributed under the terms
+of the GNU General Public License, version 2 or (at your option) any
+later version.
 
-Other files in this distribution are licensed through the same Public
-Domain License.
+See [COPYRIGHT](COPYRIGHT) for full authorship and attribution
+details.  See [COPYING](COPYING) for the complete license text.
