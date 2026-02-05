@@ -1,4 +1,4 @@
-name: Project Release
+name: Release CI
 
 on:
   push:
@@ -9,7 +9,6 @@ jobs:
   release:
     uses: zeppe-lin/.github-shared-workflows/.github/workflows/release-generic.yml@master
     with:
-      #artifact_path: "dist/*.tar.gz"
       prerelease: "false"
       release_name: "${{ github.ref_name }}"
 
