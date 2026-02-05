@@ -3,20 +3,44 @@ name: Build CI
 on:
   push:
     branches: [ "master" ]
+    paths: &build_paths
+      - "Makefile"
+      - "config.mk"
+      - "start-stop-daemon.c"
+      - "start-stop-daemon.8.scdoc"
+      - ".github/**"
   pull_request:
     branches: [ "master" ]
+    paths: *build_paths
 
 jobs:
-  test:
+  build-man:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Install build dependencies
-      run: sudo apt-get install -y scdoc
+      - name: Install scdoc
+        run: sudo apt-get install -y scdoc
 
-    - name: Build
-      run: make
+      - name: Generate man page
+        run: make start-stop-daemon.8
 
-# End of file.
+  build-glibc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build (glibc)
+        run: make start-stop-daemon
+
+  build-musl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install musl-gcc
+        run: sudo apt-get install -y musl-tools
+
+      - name: Build (musl)
+        run: CC=musl-gcc make start-stop-daemon
+
