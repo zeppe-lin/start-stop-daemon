@@ -293,7 +293,7 @@ xstrndup(const char *str, size_t n)
 static void
 timespec_gettime(struct timespec *ts)
 {
-#if HAVE_CLOCK_MONOTONIC
+#ifdef HAVE_CLOCK_MONOTONIC
 	if (clock_gettime(CLOCK_MONOTONIC, ts) < 0)
 		fatale("clock_gettime failed");
 #else
@@ -370,7 +370,7 @@ parse_unsigned(const char *string, int base, int *value_r)
 static long
 get_open_fd_max(void)
 {
-#if HAVE_GETDTABLESIZE
+#ifdef HAVE_GETDTABLESIZE
 	return getdtablesize();
 #else
 	return sysconf(_SC_OPEN_MAX);
