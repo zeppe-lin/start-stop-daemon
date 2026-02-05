@@ -1,12 +1,13 @@
 # project metadata
 NAME      = start-stop-daemon
-VERSION   = 1.24.1
+VERSION   = 2.0.0
 
 # paths
 PREFIX    = /usr/local
 MANPREFIX = ${PREFIX}/share/man
 
 # flags
-CPPFLAGS  = -DVERSION=\"${VERSION}\"
+CPPFLAGS  = -DVERSION=\"${VERSION}\" \
+            -DHAVE_CLOCK_MONOTONIC -DHAVE_GETDTABLESIZE
 CFLAGS    = -pedantic -Wall -Wextra -Wformat ${CPPFLAGS}
 LDFLAGS   = -static
