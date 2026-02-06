@@ -3,15 +3,16 @@ name: Build CI
 on:
   push:
     branches: [ "master" ]
-    paths: &build_paths
-      - "Makefile"
+    paths: &paths
+      - ".github/**"
       - "config.mk"
+      - "Makefile"
       - "start-stop-daemon.c"
       - "start-stop-daemon.8.scdoc"
-      - ".github/**"
+
   pull_request:
     branches: [ "master" ]
-    paths: *build_paths
+    paths: *paths
 
 jobs:
   build-man:
