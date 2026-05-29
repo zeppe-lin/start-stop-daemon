@@ -177,7 +177,7 @@ a pidfile.
 	used.  When using this option you must realize that the
 	primary and supplemental groups are set as well, even if the
 	*-g*/*--group* option is not specified.  The *-g*/*--group*
-	option is only for groups that the user isn't normally a
+	option is only for groups that the user is not normally a
 	member of (like adding per process group membership for
 	generic users like nobody).
 
@@ -204,14 +204,14 @@ a pidfile.
 	to the root directory before starting the process.
 
 *-b*, *--background*
-	Typically used with programs that don't detach on their own.
+	Typically used with programs that do not detach on their own.
 	This option will force *start-stop-daemon* to fork before
 	starting the process, and force it into the background.
 
 	*Warning:* *start-stop-daemon* cannot check the exit status if
 	the process fails to execute for any reason.  This is a last
 	resort, and is only meant for programs that either make no
-	sense forking on their own, or where it's not feasible to add
+	sense forking on their own, or where it is not feasible to add
 	the code for them to do this themselves.
 
 *-C*, *--no-close*
@@ -274,7 +274,7 @@ a pidfile.
 
 *0*
 	The requested action was performed.  If *-o*/*--oknodo* was
-	specified, it's also possible that nothing had to be done.
+	specified, it is also possible that nothing had to be done.
 	This can happen when *-S*/*--start* was specified and a
 	matching process was already running, or when *-K*/*--stop*
 	was specified and there were no matching processes.
@@ -303,7 +303,7 @@ returned:
 	Program is not running.
 
 *4*
-	Unable to determine program status.
+	Cannot determine program status.
 
 # EXAMPLES
 
