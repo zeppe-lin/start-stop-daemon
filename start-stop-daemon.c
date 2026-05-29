@@ -1150,7 +1150,7 @@ parse_options(int argc, char * const *argv)
 #ifdef PROCESS_NAME_SIZE
 	if (cmdname && strlen(cmdname) > PROCESS_NAME_SIZE)
 		warning("this system is not able to track process names\n"
-		        "longer than %d characters, please use --exec "
+		        "longer than %d characters, use --exec "
 		        "instead of --name.\n", PROCESS_NAME_SIZE);
 #endif
 
