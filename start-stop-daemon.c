@@ -295,12 +295,12 @@ timespec_gettime(struct timespec *ts)
 {
 #ifdef HAVE_CLOCK_MONOTONIC
 	if (clock_gettime(CLOCK_MONOTONIC, ts) < 0)
-		fatale("cannot clock_gettime");
+		fatale("cannot get current time");
 #else
 	struct timeval tv;
 
 	if (gettimeofday(&tv, NULL) != 0)
-		fatale("cannot gettimeofday");
+		fatale("cannot get current time");
 
 	ts->tv_sec = tv.tv_sec;
 	ts->tv_nsec = tv.tv_usec * NANOSEC_IN_MICROSEC;
@@ -1449,7 +1449,7 @@ do_procinit(void)
 
 	procdir = opendir("/proc");
 	if (!procdir)
-		fatale("cannot opendir /proc");
+		fatale("cannot open directory /proc");
 
 	foundany = 0;
 	while ((entry = readdir(procdir)) != NULL) {
@@ -1555,12 +1555,12 @@ do_start(int argc, char **argv)
 		set_io_schedule(io_sched);
 	if (changeroot != NULL) {
 		if (chdir(changeroot) < 0)
-			fatale("cannot chdir() to %s", changeroot);
+			fatale("cannot change directory to %s", changeroot);
 		if (chroot(changeroot) < 0)
-			fatale("cannot chroot() to %s", changeroot);
+			fatale("cannot change root directory to %s", changeroot);
 	}
 	if (chdir(changedir) < 0)
-		fatale("cannot chdir() to %s", changedir);
+		fatale("cannot change directory to %s", changedir);
 
 	rgid = getgid();
 	ruid = getuid();
@@ -1576,7 +1576,7 @@ do_start(int argc, char **argv)
 		 * supplementary groups will be already in place. */
 		if (rgid != (gid_t)runas_gid || ruid != (uid_t)runas_uid) {
 			if (initgroups(changeuser, runas_gid))
-				fatale("cannot set initgroups() with gid %d",
+				fatale("cannot initialize user groups with gid %d",
 				       runas_gid);
 		}
 
