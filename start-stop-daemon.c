@@ -276,7 +276,7 @@ xmalloc(int size)
 	ptr = malloc(size);
 	if (ptr)
 		return ptr;
-	fatale("malloc(%d) failed", size);
+	fatale("cannot malloc(%d)", size);
 }
 
 static char *
@@ -287,7 +287,7 @@ xstrndup(const char *str, size_t n)
 	new_str = strndup(str, n);
 	if (new_str)
 		return new_str;
-	fatale("strndup(%s, %zu) failed", str, n);
+	fatale("cannot strndup(%s, %zu)", str, n);
 }
 
 static void
@@ -295,12 +295,12 @@ timespec_gettime(struct timespec *ts)
 {
 #ifdef HAVE_CLOCK_MONOTONIC
 	if (clock_gettime(CLOCK_MONOTONIC, ts) < 0)
-		fatale("clock_gettime failed");
+		fatale("cannot clock_gettime");
 #else
 	struct timeval tv;
 
 	if (gettimeofday(&tv, NULL) != 0)
-		fatale("gettimeofday failed");
+		fatale("cannot gettimeofday");
 
 	ts->tv_sec = tv.tv_sec;
 	ts->tv_nsec = tv.tv_usec * NANOSEC_IN_MICROSEC;
@@ -387,7 +387,7 @@ closefrom(int lowfd)
 	if (close_range(lowfd, maxfd, 0) == 0)
 		return;
 	if (errno != ENOSYS)
-		fatale("close_range failed");
+		fatale("cannot close_range");
 #endif
 
 	for (i = maxfd - 1; i >= lowfd; --i)
@@ -406,7 +406,7 @@ wait_for_child(pid_t pid)
 	} while (child == -1 && errno == EINTR);
 
 	if (child != pid)
-		fatal("error waiting for child");
+		fatal("cannot wait for child");
 
 	if (WIFEXITED(status)) {
 		int ret = WEXITSTATUS(status);
@@ -436,12 +436,12 @@ write_pidfile(const char *filename, pid_t pid)
 		fp = fdopen(fd, "w");
 
 	if (fp == NULL)
-		fatale("unable to open pidfile '%s' for writing", filename);
+		fatale("cannot open pidfile '%s' for writing", filename);
 
 	fprintf(fp, "%d\n", pid);
 
 	if (fclose(fp))
-		fatale("unable to close pidfile '%s'", filename);
+		fatale("cannot close pidfile '%s'", filename);
 }
 
 static void
@@ -469,7 +469,7 @@ daemonize(void)
 
 	pid = fork();
 	if (pid < 0)
-		fatale("unable to do first fork");
+		fatale("cannot do first fork");
 	else if (pid) {
 		/*
 		 * First Parent.
@@ -490,7 +490,7 @@ daemonize(void)
 
 	pid = fork();
 	if (pid < 0)
-		fatale("unable to do second fork");
+		fatale("cannot do second fork");
 	else if (pid) {
 		/*
 		 * Second parent.
@@ -630,7 +630,7 @@ usage(void)
 "  0 = program is running\n"
 "  1 = program is not running and the pid file exists\n"
 "  3 = program is not running\n"
-"  4 = unable to determine status\n");
+"  4 = cannot determine status\n");
 }
 
 static void
@@ -804,7 +804,7 @@ set_proc_schedule(struct res_schedule *sched)
 	param.sched_priority = sched->priority;
 
 	if (sched_setscheduler(getpid(), sched->policy, &param) == -1)
-		fatale("unable to set process scheduler");
+		fatale("cannot set process scheduler");
 }
 
 static inline int
@@ -820,7 +820,7 @@ set_io_schedule(struct res_schedule *sched)
 
 	io_sched_mask = IOPRIO_PRIO_VALUE(sched->policy, sched->priority);
 	if (ioprio_set(IOPRIO_WHO_PROCESS, getpid(), io_sched_mask) == -1)
-		warning("unable to alter IO priority to mask %i (%s)\n",
+		warning("cannot alter IO priority to mask %i (%s)\n",
 		        io_sched_mask, strerror(errno));
 }
 
@@ -1196,7 +1196,7 @@ setup_options(void)
 			fullexecname = execname;
 
 		if (stat(fullexecname, &exec_stat))
-			fatale("unable to stat %s", fullexecname);
+			fatale("cannot stat %s", fullexecname);
 
 		if (fullexecname != execname)
 			free(fullexecname);
@@ -1357,7 +1357,7 @@ pid_is_running(pid_t pid)
 	else if (errno == ESRCH)
 		return false;
 	else
-		fatale("error checking pid %u status", pid);
+		fatale("cannot check pid %u status", pid);
 }
 
 static enum status_code
@@ -1435,7 +1435,7 @@ do_pidfile(const char *name)
 	} else if (errno == ENOENT)
 		return STATUS_DEAD;
 	else
-		fatale("unable to open pidfile %s", name);
+		fatale("cannot open pidfile %s", name);
 }
 
 static enum status_code
@@ -1449,7 +1449,7 @@ do_procinit(void)
 
 	procdir = opendir("/proc");
 	if (!procdir)
-		fatale("unable to opendir /proc");
+		fatale("cannot opendir /proc");
 
 	foundany = 0;
 	while ((entry = readdir(procdir)) != NULL) {
@@ -1537,17 +1537,17 @@ do_start(int argc, char **argv)
 	if (background && close_io) {
 		devnull_fd = open("/dev/null", O_RDONLY);
 		if (devnull_fd < 0)
-			fatale("unable to open '%s'", "/dev/null");
+			fatale("cannot open '%s'", "/dev/null");
 	}
 	if (background && output_io) {
 		output_fd = open(output_io, O_CREAT | O_WRONLY | O_APPEND, 0664);
 		if (output_fd < 0)
-			fatale("unable to open '%s'", output_io);
+			fatale("cannot open '%s'", output_io);
 	}
 	if (nicelevel) {
 		errno = 0;
 		if ((nice(nicelevel) == -1) && (errno != 0))
-			fatale("unable to alter nice level by %i", nicelevel);
+			fatale("cannot alter nice level by %i", nicelevel);
 	}
 	if (proc_sched)
 		set_proc_schedule(proc_sched);
@@ -1555,19 +1555,19 @@ do_start(int argc, char **argv)
 		set_io_schedule(io_sched);
 	if (changeroot != NULL) {
 		if (chdir(changeroot) < 0)
-			fatale("unable to chdir() to %s", changeroot);
+			fatale("cannot chdir() to %s", changeroot);
 		if (chroot(changeroot) < 0)
-			fatale("unable to chroot() to %s", changeroot);
+			fatale("cannot chroot() to %s", changeroot);
 	}
 	if (chdir(changedir) < 0)
-		fatale("unable to chdir() to %s", changedir);
+		fatale("cannot chdir() to %s", changedir);
 
 	rgid = getgid();
 	ruid = getuid();
 	if (changegroup != NULL) {
 		if (rgid != (gid_t)runas_gid) {
 			if (setgid(runas_gid))
-				fatale("unable to set gid to %d", runas_gid);
+				fatale("cannot set gid to %d", runas_gid);
 		}
 	}
 	if (changeuser != NULL) {
@@ -1576,13 +1576,13 @@ do_start(int argc, char **argv)
 		 * supplementary groups will be already in place. */
 		if (rgid != (gid_t)runas_gid || ruid != (uid_t)runas_uid) {
 			if (initgroups(changeuser, runas_gid))
-				fatale("unable to set initgroups() with gid %d",
+				fatale("cannot set initgroups() with gid %d",
 				       runas_gid);
 		}
 
 		if (ruid != (uid_t)runas_uid) {
 			if (setuid(runas_uid))
-				fatale("unable to set uid to %s", changeuser);
+				fatale("cannot set uid to %s", changeuser);
 		}
 	}
 
@@ -1597,7 +1597,7 @@ do_start(int argc, char **argv)
 		closefrom(3);
 	}
 	execv(startas, argv);
-	fatale("unable to start %s", startas);
+	fatale("cannot start %s", startas);
 }
 
 /* Use a stop context to track the current state. */
@@ -1632,7 +1632,7 @@ do_stop(struct stop_context *ctx, int sig_num)
 			ctx->n_killed++;
 		} else {
 			if (sig_num)
-				warning("failed to kill %d: %s\n",
+				warning("cannot kill %d: %s\n",
 				        p->pid, strerror(errno));
 			ctx->n_notkilled++;
 		}
@@ -1733,7 +1733,7 @@ do_stop_timeout(struct stop_context *ctx, int timeout)
 
 		int rc = pselect(0, NULL, NULL, NULL, &interval, NULL);
 		if (rc < 0 && errno != EINTR)
-			fatale("select() failed for pause");
+			fatale("cannot select() for pause");
 	}
 }
 
@@ -1855,7 +1855,7 @@ do_status()
 		break;
 	case STATUS_UNKNOWN:
 	default:
-		fprintf(stderr, "Unable to determine the program status\n");
+		fprintf(stderr, "Cannot determine the program status\n");
 		break;
 	}
 
