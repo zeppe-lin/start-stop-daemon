@@ -883,7 +883,7 @@ parse_schedule(const char *schedule_str)
 			if (str_len >= sizeof(item_buf))
 				badusage("invalid schedule item: "
 				         "far too long "
-				         "(you must delimit items "
+				         "(items must be delimited "
 				         "with slashes)");
 			memcpy(item_buf, schedule_str, str_len);
 			item_buf[str_len] = '\0';
