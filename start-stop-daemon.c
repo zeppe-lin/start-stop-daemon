@@ -1733,7 +1733,7 @@ do_stop_timeout(struct stop_context *ctx, int timeout)
 
 		int rc = pselect(0, NULL, NULL, NULL, &interval, NULL);
 		if (rc < 0 && errno != EINTR)
-			fatale("cannot select() for pause");
+			fatale("cannot pause waiting for process to end");
 	}
 }
 
