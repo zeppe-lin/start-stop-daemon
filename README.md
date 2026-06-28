@@ -9,7 +9,7 @@ This distribution is a fork of CRUX SSD at commit 6209edb
 Debian's SSD from the `dpkg` distribution, adjusted for CRUX.
 
 This SSD have the following differences:
-  * CRUX build patch applied by default
+  * CRUX modifications applied by default
   * Removed systemd-related code
   * Linux-only (no cross-platform support)
   * Manual page in `scdoc(5)` format
@@ -19,8 +19,8 @@ This SSD have the following differences:
 See the git log for full history.
 
 The original sources can be downloaded from:
-  1. https://git.dpkg.org/git/dpkg/dpkg.git
-  2. https://git.crux.nu/tools/start-stop-daemon.git
+  1. https://git.dpkg.org/git/dpkg/dpkg.git (upstream)
+  2. https://git.crux.nu/tools/start-stop-daemon.git (CRUX)
 
 ---
 
@@ -30,32 +30,72 @@ REQUIREMENTS
 Build time
 ----------
   * C99 compiler
-  * POSIX `sh(1p)`, `make(1p)`, and "mandatory utilities"
-  * `scdoc(1)` to generate manual page
+  * Meson
+  * Ninja
+  * `scdoc(1)` to generate manual pages
+    (enabled by default via the `manpages` option)
+  * `libbsd` to provide explicit `closefrom` support
+    (disabled by default via the `libbsd` option)
 
-**Note:**
-`make(1p)` should support POSIX 2024, or use BSD/GNU `make(1)`.
+**Note on closefrom(3) support:**
+  * **Glibc >= 2.34** provides `closefrom` natively in core standard
+    libc.  If you are building on a modern Glibc host system, you do
+    not need `libbsd` at all; set `-Dlibbsd=disabled` and the build
+    system will safely resolve it via native headers.
+  * **Musl systems** do not implement `closefrom` in standard libc.
+    The build system will cleanly fall back to native Linux
+    `close_range()` or a sequential descriptor tracking loop when
+    `libbsd` is disabled.
 
 ---
 
 INSTALLATION
 ============
 
-To build and install:
+General
+-------
 
 ```sh
-make
-make install   # as root
+# Configure
+meson setup build
+
+# Compile
+meson compile -C build
+
+# Install
+meson install -C build
 ```
 
-Configuration parameters are defined in `config.mk`.
+Link Mode
+---------
+
+`start-stop-daemon` can be built against shared or static
+`libc`/`libbsd`.
+
+Shared:
+
+```sh
+meson setup build -D link_mode=shared
+meson compile -C build
+```
+
+Static:
+
+```sh
+meson setup build -D link_mode=static
+meson compile -C build
+```
+
+For generic static packaging, keep LTO disabled unless the whole
+toolchain is prepared for static LTO archives.
 
 ---
 
 DOCUMENTATION
 =============
 
-See `start-stop-daemon.8.scdoc` manual page.
+Manual page is provided in `/man` and installed under the system
+manual hierarchy.
 
 ---
 
