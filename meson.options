@@ -1,0 +1,21 @@
+option(
+  'link_mode',
+  type: 'combo',
+  choices: ['shared', 'static'],
+  value: 'shared',
+  description: 'How start-stop-daemon links against libc/libbsd'
+)
+
+option(
+  'libbsd',
+  type: 'feature',
+  value: 'disabled',
+  description: 'Link against libbsd for closefrom support'
+)
+
+option(
+  'manpages',
+  type: 'boolean',
+  value: true,
+  description: 'Build and install manual pages'
+)
