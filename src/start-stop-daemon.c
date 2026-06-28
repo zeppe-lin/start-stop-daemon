@@ -3,9 +3,7 @@
  * See COPYING for license terms and COPYRIGHT for notices.
  */
 
-#if !defined(__linux__)
-#  error start-stop-daemon is supported only on Linux platforms
-#endif
+#include "config.h"
 
 #define _GNU_SOURCE
 
@@ -293,7 +291,7 @@ xstrndup(const char *str, size_t n)
 static void
 timespec_gettime(struct timespec *ts)
 {
-#ifdef HAVE_CLOCK_MONOTONIC
+#if HAVE_CLOCK_MONOTONIC
 	if (clock_gettime(CLOCK_MONOTONIC, ts) < 0)
 		fatale("cannot get current time");
 #else
@@ -370,7 +368,7 @@ parse_unsigned(const char *string, int base, int *value_r)
 static long
 get_open_fd_max(void)
 {
-#ifdef HAVE_GETDTABLESIZE
+#if HAVE_GETDTABLESIZE
 	return getdtablesize();
 #else
 	return sysconf(_SC_OPEN_MAX);
@@ -636,9 +634,9 @@ usage(void)
 static void
 do_version(void)
 {
-	printf("start-stop-daemon %s\n"
+	printf("%s %s\n"
 	       "Original author: Marek Michalkiewicz (Public Domain)\n"
-	       "License: GPL-2.0-or-later\n", VERSION);
+	       "License: GPL-2.0-or-later\n", PACKAGE_NAME, PACKAGE_VERSION);
 }
 
 static void __attribute__((noreturn))
