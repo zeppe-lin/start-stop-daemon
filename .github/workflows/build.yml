@@ -4,44 +4,78 @@ on:
   push:
     branches: [ "master" ]
     paths: &paths
+      - "meson.build"
+      - "meson.options"
+      - "meson_options.txt"
+      - "src/**"
+      - "man/**"
+      - "completion/**"
       - ".github/**"
-      - "config.mk"
-      - "Makefile"
-      - "start-stop-daemon.c"
-      - "start-stop-daemon.8.scdoc"
 
   pull_request:
     branches: [ "master" ]
     paths: *paths
 
 jobs:
-  build-man:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - name: glibc
+            container: ""
+            install: |
+              sudo apt-get update
+              sudo apt-get install -y \
+                meson ninja-build pkg-config gcc \
+                scdoc libbsd
+          - name: musl
+            container: "alpine:latest"
+            install: |
+              apk add --no-cache \
+                build-base meson ninja pkgconf \
+                libbsd-dev libbsd-static
+
+        cfg:
+          - name: shared-libbsd
+            link_mode: shared
+            libbsd: enabled
+
+          - name: shared-nolibbsd
+            link_mode: shared
+            libbsd: disabled
+
+          - name: static-libbsd
+            link_mode: static
+            libbsd: enabled
+
+          - name: static-nolibbsd
+            link_mode: static
+            libbsd: disabled
+
+    name: ${{ matrix.env.name }} / ${{ matrix.cfg.name }}
+    container: ${{ matrix.env.container != '' && matrix.env.container || null }}
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Install scdoc
-        run: sudo apt-get install -y scdoc
+      - name: Install build dependencies
+        run: ${{ matrix.env.install }}
 
-      - name: Generate man page
-        run: make start-stop-daemon.8
+      - name: Configure start-stop-daemon
+        run: |
+          meson setup build \
+            --buildtype=plain \
+            --wrap-mode=nodownload \
+            --prefix=/usr \
+            -D b_lto=false \
+            -D b_pie=true \
+            -D link_mode=${{ matrix.cfg.link_mode }} \
+            -D libbsd=${{ matrix.cfg.libbsd }}
 
-  build-glibc:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+      - name: Build start-stop-daemon
+        run: meson compile -C build -v
 
-      - name: Build (glibc)
-        run: make start-stop-daemon
-
-  build-musl:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install musl-gcc
-        run: sudo apt-get install -y musl-tools
-
-      - name: Build (musl)
-        run: CC=musl-gcc make start-stop-daemon
-
+      - name: Install start-stop-daemon to staging
+        run: DESTDIR="$PWD/stage" meson install -C build -v
