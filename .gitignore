@@ -2,5 +2,3 @@
 *.swp
 *.bak
 *.tar.gz
-start-stop-daemon
-start-stop-daemon.8
