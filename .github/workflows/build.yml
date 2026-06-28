@@ -78,4 +78,4 @@ jobs:
         run: meson compile -C build -v
 
       - name: Install start-stop-daemon to staging
-        run: DESTDIR="$PWD/stage" meson install -C build -v
+        run: DESTDIR="$PWD/stage" meson install -C build
