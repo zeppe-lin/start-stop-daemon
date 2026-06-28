@@ -35,7 +35,7 @@ jobs:
             install: |
               apk add --no-cache \
                 build-base meson ninja pkgconf \
-                libbsd-dev libbsd-static
+                scdoc libbsd-dev libbsd-static
 
         cfg:
           - name: shared-libbsd
