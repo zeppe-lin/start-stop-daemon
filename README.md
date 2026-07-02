@@ -89,6 +89,11 @@ meson compile -C build
 For generic static packaging, keep LTO disabled unless the whole
 toolchain is prepared for static LTO archives.
 
+> [!IMPORTANT]
+> Static builds disable PIE (position-independent executables),
+> since PIE requires a dynamic loader and is incompatible with
+> `-static`.
+
 ---
 
 DOCUMENTATION
